@@ -40,8 +40,10 @@ return [
         'model' => env('ANTHROPIC_MODEL', 'claude-sonnet-4-6'),
     ],
     'telegram' => [
-        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
-        'chat_id'   => env('TELEGRAM_CHAT_ID'),
+        'bot_token'      => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id'        => env('TELEGRAM_CHAT_ID'),
+        'bot_username'   => env('TELEGRAM_BOT_USERNAME'),
+        'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET'),
     ],
     'uphunt' => [
         'webhook_key' => env('UPHUNT_WEBHOOK_KEY'),
