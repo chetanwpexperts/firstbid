@@ -26,7 +26,9 @@ class SettingsController extends Controller
 
         $request->user()->update($data);
 
-        return back()->with('status', 'Settings saved.');
+        return back()
+            ->with('status', 'Settings saved.')
+            ->with('ok', 'Settings saved.');
     }
 
     public function testTelegram(Request $request, TelegramNotifier $telegram)
@@ -39,7 +41,10 @@ class SettingsController extends Controller
 
         try {
             $telegram->sendText($chatId, "✅ FirstBid connected! Job alerts will arrive here.");
-            return back()->with('status', 'Test message sent — check your Telegram.');
+
+            return back()
+                ->with('status', 'Test message sent — check your Telegram.')
+                ->with('ok', 'Test message sent — check your Telegram.');
         } catch (\Throwable $e) {
             return back()->withErrors(['telegram_chat_id' => 'Sending failed: ' . $e->getMessage()]);
         }
