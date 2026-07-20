@@ -49,6 +49,9 @@ return [
         'webhook_key' => env('UPHUNT_WEBHOOK_KEY'),
         'min_score'   => env('UPHUNT_MIN_SCORE', 7),
     ],
+    'inbound_email' => [
+        'secret' => env('INBOUND_EMAIL_SECRET'),
+    ],
     'proposal' => [
         'profile' => env('PROPOSAL_PROFILE', <<<'TXT'
     Freelance PHP/web developer (chetanbuilds.com), 8+ years. Core stack: Laravel (up to v12/PHP 8.2), CodeIgniter 3, WordPress custom themes & plugins, MySQL, Razorpay/payment integrations, REST APIs.

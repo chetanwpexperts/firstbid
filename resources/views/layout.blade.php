@@ -40,6 +40,10 @@ input:focus,textarea:focus{outline:2px solid var(--green);outline-offset:-1px;bo
 code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px solid var(--line);border-radius:5px;padding:2px 7px;word-break:break-all}
 .copyrow{display:flex;gap:8px;align-items:center;margin-top:6px}
 .copyrow input{font-family:var(--mono);font-size:12.5px}
+.codebox{display:flex;align-items:center;gap:10px;background:#fbfcfa;border:1px solid var(--line);border-radius:7px;padding:10px 12px;font-family:var(--mono);font-size:13px;word-break:break-all}
+.codebox span{flex:1}
+.copybtn{flex:none;background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer}
+.copybtn:hover{border-color:var(--green);color:var(--green-dark)}
 .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
 .stat .n{font-family:var(--mono);font-size:26px;font-weight:700}
@@ -91,6 +95,7 @@ function copyVal(id, btn){
     setTimeout(() => btn.innerText = old, 1500);
   });
 }
+function copyText(id, btn){ copyVal(id, btn); }
 </script>
 </body>
 </html>

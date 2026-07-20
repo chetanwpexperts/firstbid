@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\InboundEmail;
 use App\Services\TelegramNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
@@ -10,10 +11,26 @@ class SettingsController extends Controller
 {
     public function edit(Request $request)
     {
+        $user = $request->user();
+
         // Works with either structure: settings/edit.blade.php or settings.blade.php (root)
         $view = View::exists('settings.edit') ? 'settings.edit' : 'settings';
 
-        return view($view, ['user' => $request->user()]);
+        return view($view, [
+            'user'              => $user,
+            'lastEmail'         => InboundEmail::where('user_id', $user->id)->latest()->first(),
+            'verificationEmail' => InboundEmail::where('user_id', $user->id)->where('status', 'verification')->latest()->first(),
+        ]);
+    }
+
+    public function verification(Request $request)
+    {
+        $email = InboundEmail::where('user_id', $request->user()->id)
+            ->where('status', 'verification')
+            ->latest()
+            ->firstOrFail();
+
+        return view('settings.verification', ['email' => $email]);
     }
 
     public function update(Request $request)

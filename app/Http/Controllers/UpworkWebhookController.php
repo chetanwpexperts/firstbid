@@ -42,8 +42,12 @@ class UpworkWebhookController extends Controller
             ? sprintf('$%s-%s/hr', $budget['hourlyMin'] ?? '?', $budget['hourlyMax'] ?? '?')
             : (isset($budget['fixedPrice']) ? '$' . $budget['fixedPrice'] . ' fixed' : 'Budget not stated');
 
+        // Real-time webhook is a Pro feature once the trial ends (email source keeps working under normal trial rules).
+        $proGated = $user->plan !== 'pro' && ! $user->onTrial();
+
         $job = UpworkJob::create([
             'user_id'             => $user->id,
+            'source'              => 'webhook',
             'ciphertext'          => $ciphertext,
             'title'               => $p['title'] ?? 'Untitled',
             'description'         => $p['description'] ?? '',
@@ -58,7 +62,13 @@ class UpworkWebhookController extends Controller
             'uphunt_score'        => $p['matchingScore'] ?? null,
             'screening_questions' => $p['screeningQuestions'] ?? [],
             'raw_payload'         => $p,
+            'status'              => $proGated ? 'skipped' : 'received',
+            'skip_reason'         => $proGated ? 'webhook is a Pro feature' : null,
         ]);
+
+        if ($proGated) {
+            return response()->json(['ok' => true, 'id' => $job->id]);
+        }
 
         ProcessIncomingJob::dispatch($job->id);
 
