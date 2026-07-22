@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsApproved;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => auth()->check()
@@ -18,10 +21,14 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
 
-// Authenticated app
+// Authenticated user (pending approval allowed for logout & pending screen)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/pending', [AuthController::class, 'showPending'])->name('pending');
+});
 
+// Authenticated & Approved app
+Route::middleware(['auth', EnsureUserIsApproved::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/jobs/{id}', [DashboardController::class, 'show'])->name('jobs.show');
     Route::post('/jobs/{id}/generate', [DashboardController::class, 'generate'])->name('jobs.generate');
@@ -33,4 +40,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings/verification', [SettingsController::class, 'verification'])->name('settings.verification');
 
     Route::post('/notifications/seen', [NotificationController::class, 'markSeen'])->name('notifications.seen');
+});
+
+// Admin panel (requires admin role)
+Route::middleware(['auth', EnsureUserIsApproved::class, EnsureUserIsAdmin::class])->group(function () {
+    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+    Route::post('/admin/users/{user}/toggle-approval', [AdminController::class, 'toggleApproval'])->name('admin.users.toggle-approval');
+    Route::post('/admin/users/{user}/toggle-admin', [AdminController::class, 'toggleAdmin'])->name('admin.users.toggle-admin');
+    Route::post('/admin/users/{user}/update', [AdminController::class, 'updateUser'])->name('admin.users.update');
+    Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
 });

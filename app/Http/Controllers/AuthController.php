@@ -24,6 +24,8 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        $isFirstUser = User::count() === 0;
+
         $user = User::create([
             'name'           => $data['name'],
             'email'          => $data['email'],
@@ -33,13 +35,28 @@ class AuthController extends Controller
             'trial_ends_at'  => now()->addDays(30),
             'letters_quota'  => 100,
             'min_score'      => 7,
+            'is_approved'    => $isFirstUser,
+            'is_admin'       => $isFirstUser,
         ]);
 
         Auth::login($user);
         $request->session()->regenerate();
 
+        if (! $user->is_approved) {
+            return redirect()->route('pending');
+        }
+
         return redirect()->route('settings')
             ->with('status', 'Welcome! Your 30-day free trial has started. Complete your profile below.');
+    }
+
+    public function showPending()
+    {
+        if (auth()->check() && auth()->user()->is_approved) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('auth.pending');
     }
 
     public function showLogin()
@@ -59,6 +76,10 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        if (! Auth::user()->is_approved) {
+            return redirect()->route('pending');
+        }
 
         return redirect()->intended(route('dashboard'));
     }

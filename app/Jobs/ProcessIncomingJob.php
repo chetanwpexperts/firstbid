@@ -30,6 +30,12 @@ class ProcessIncomingJob implements ShouldQueue
 
         $user = $job->user;
 
+        // ---- Account approval check ----
+        if (! $user->is_approved) {
+            $job->update(['status' => 'skipped', 'skip_reason' => 'account pending approval']);
+            return;
+        }
+
         // ---- Trial check (plan 'pro' bypasses; everyone else needs an active trial) ----
         if ($user->plan !== 'pro' && ($user->trial_ends_at === null || now()->greaterThan($user->trial_ends_at))) {
             $job->update(['status' => 'skipped', 'skip_reason' => 'trial expired']);

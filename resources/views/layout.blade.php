@@ -101,6 +101,9 @@ code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px so
   <a class="brand" href="{{ route('dashboard') }}">First<span>Bid</span></a>
   <a class="link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Jobs</a>
   <a class="link {{ request()->routeIs('settings') ? 'active' : '' }}" href="{{ route('settings') }}">Settings</a>
+  @if(auth()->user()?->is_admin)
+  <a class="link {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.users') }}">Admin</a>
+  @endif
   <div class="notif-bell" id="notifBell">
     <button type="button" class="notif-toggle" onclick="toggleNotifDropdown()" aria-label="Notifications">
       🔔

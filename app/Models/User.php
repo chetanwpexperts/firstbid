@@ -28,6 +28,8 @@ class User extends Authenticatable
         'letters_quota',
         'quota_reset_at',
         'last_seen_jobs_at',
+        'is_approved',
+        'is_admin',
     ];
 
     protected $hidden = [
@@ -46,6 +48,8 @@ class User extends Authenticatable
             'last_seen_jobs_at'       => 'datetime',
             'auto_generate'           => 'boolean',
             'skip_unverified_payment' => 'boolean',
+            'is_approved'              => 'boolean',
+            'is_admin'                 => 'boolean',
         ];
     }
 
