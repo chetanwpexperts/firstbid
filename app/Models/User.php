@@ -27,6 +27,7 @@ class User extends Authenticatable
         'letters_used',
         'letters_quota',
         'quota_reset_at',
+        'last_seen_jobs_at',
     ];
 
     protected $hidden = [
@@ -42,6 +43,7 @@ class User extends Authenticatable
             'password'                => 'hashed',
             'trial_ends_at'           => 'datetime',
             'quota_reset_at'          => 'datetime',
+            'last_seen_jobs_at'       => 'datetime',
             'auto_generate'           => 'boolean',
             'skip_unverified_payment' => 'boolean',
         ];

@@ -49,6 +49,10 @@ class DashboardController extends Controller
             'quota'    => max(0, $user->letters_quota - $user->letters_used),
         ];
 
+        // Visiting the dashboard counts as having seen everything up to
+        // now — see App\View\Composers\NotificationsComposer for the bell.
+        $user->update(['last_seen_jobs_at' => now()]);
+
         $view = View::exists('dashboard') ? 'dashboard' : 'dashboard.index';
 
         return view($view, compact('jobs', 'stats', 'user', 'window'));

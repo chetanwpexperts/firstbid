@@ -80,6 +80,19 @@ code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px so
 .auth-card .brand{font-weight:700;font-size:24px;text-align:center;display:block;margin-bottom:22px;color:var(--ink);text-decoration:none}
 .auth-card .brand span{color:var(--green)}
 .err-list{color:var(--red);font-size:13px;margin-top:6px}
+.notif-bell{position:relative}
+.notif-toggle{background:none;border:none;font-size:17px;cursor:pointer;position:relative;padding:6px;line-height:1;color:var(--muted);border-radius:7px}
+.notif-toggle:hover{background:var(--bg);color:var(--ink)}
+.notif-badge{position:absolute;top:1px;right:1px;background:var(--red);color:#fff;font-size:10px;font-family:var(--mono);font-weight:700;border-radius:999px;padding:1px 5px;min-width:16px;text-align:center;line-height:1.4;pointer-events:none}
+.notif-dropdown{display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;max-width:calc(100vw - 32px);background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,25,.12);z-index:50;overflow:hidden}
+.notif-dropdown.show{display:block}
+.notif-item{display:block;padding:11px 14px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+.notif-item:hover{background:#fbfcfa}
+.notif-item-title{font-weight:600;font-size:13px;margin-bottom:3px}
+.notif-item-meta{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.notif-empty{padding:18px 14px;text-align:center;color:var(--muted);font-size:13px}
+.notif-viewall{display:block;padding:10px 14px;text-align:center;font-size:12.5px;font-weight:600;color:var(--green-dark);text-decoration:none;background:#fbfcfa}
+.notif-viewall:hover{background:#f2f5f0}
 </style>
 </head>
 <body>
@@ -88,6 +101,25 @@ code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px so
   <a class="brand" href="{{ route('dashboard') }}">First<span>Bid</span></a>
   <a class="link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Jobs</a>
   <a class="link {{ request()->routeIs('settings') ? 'active' : '' }}" href="{{ route('settings') }}">Settings</a>
+  <div class="notif-bell" id="notifBell">
+    <button type="button" class="notif-toggle" onclick="toggleNotifDropdown()" aria-label="Notifications">
+      🔔
+      @if($unseenJobsCount > 0)
+        <span class="notif-badge" id="notifBadge">{{ $unseenJobsCount > 99 ? '99+' : $unseenJobsCount }}</span>
+      @endif
+    </button>
+    <div class="notif-dropdown" id="notifDropdown">
+      @forelse($unseenJobs as $job)
+        <a href="{{ route('jobs.show', $job->id) }}" class="notif-item">
+          <div class="notif-item-title">{{ $job->title }}</div>
+          <div class="notif-item-meta">Score {{ $job->uphunt_score ?? '—' }} · {{ $job->budget_display }} · {{ $job->created_at->diffForHumans() }}</div>
+        </a>
+      @empty
+        <div class="notif-empty">No new jobs.</div>
+      @endforelse
+      <a href="{{ route('dashboard') }}" class="notif-viewall">View all jobs</a>
+    </div>
+  </div>
   <form method="POST" action="{{ route('logout') }}">@csrf<button class="btn ghost sm" type="submit">Log out</button></form>
 </nav>
 @endauth
@@ -105,6 +137,28 @@ function copyVal(id, btn){
   });
 }
 function copyText(id, btn){ copyVal(id, btn); }
+
+@auth
+function toggleNotifDropdown(){
+  const dd = document.getElementById('notifDropdown');
+  const opening = !dd.classList.contains('show');
+  dd.classList.toggle('show');
+  if (opening) {
+    document.getElementById('notifBadge')?.remove();
+    fetch('{{ route('notifications.seen') }}', {
+      method: 'POST',
+      headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json'},
+      keepalive: true,
+    });
+  }
+}
+document.addEventListener('click', function(e){
+  const bell = document.getElementById('notifBell');
+  if (bell && !bell.contains(e.target)) {
+    document.getElementById('notifDropdown')?.classList.remove('show');
+  }
+});
+@endauth
 </script>
 </body>
 </html>
