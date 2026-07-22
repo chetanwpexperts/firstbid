@@ -1,8 +1,7 @@
 <header class="app-header">
   <div class="header-container">
-    <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}">
-      <img src="{{ asset('images/logo.png') }}" alt="FirstBid.in Logo" style="height: 28px; width: auto; object-fit: contain; vertical-align: middle;">
-      First<span class="accent">Bid</span><span style="color: var(--text-dark); font-weight: 800; font-size: 0.85em;">.in</span>
+    <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}" style="display: flex; align-items: center; gap: 10px;">
+      <img src="{{ asset('images/logo.png') }}" alt="FirstBid.in Logo" style="height: 40px; width: auto; object-fit: contain; display: block;">
       <span class="ai-badge">AI 2.0</span>
     </a>
 
