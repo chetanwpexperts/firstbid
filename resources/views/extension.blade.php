@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'FirstBid Chrome Extension — Coming Soon | 100% Upwork ToS Compliant')
+@section('title', 'FirstBidIn Chrome Extension — Coming Soon | 100% Upwork ToS Compliant')
 
 @section('content')
 <div style="text-align: center; padding: 40px 0 50px;">
@@ -9,7 +9,7 @@
   </div>
 
   <h1 style="font-size: clamp(32px, 5vw, 52px); font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; max-width: 860px; margin: 0 auto 20px; color: var(--upwork-deep);">
-    FirstBid for Chrome — <span style="color: var(--upwork-green);">Coming Soon</span>
+    FirstBidIn for Chrome — <span style="color: var(--upwork-green);">Coming Soon</span>
   </h1>
 
   <p style="font-size: 18px; color: var(--text-muted); max-width: 680px; margin: 0 auto 32px; line-height: 1.6;">

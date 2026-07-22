@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'FirstBid — Apply to Upwork Jobs in 2 Minutes with AI Scope & Budget Estimator')
+@section('title', 'FirstBidIn — Apply to Upwork Jobs in 2 Minutes with AI Scope & Budget Estimator')
 
 @section('content')
 <!-- Promotional Launch Banner -->
@@ -18,7 +18,7 @@
   </h1>
 
   <p style="font-size: 18px; color: var(--text-muted); max-width: 680px; margin: 0 auto 32px; line-height: 1.6;">
-    FirstBid turns real-time job alerts into <b>mathematically estimated budgets</b>, task-by-task effort timelines, and ready-to-submit proposals written in your voice — straight to your inbox & Telegram.
+    FirstBidIn turns real-time job alerts into <b>mathematically estimated budgets</b>, task-by-task effort timelines, and ready-to-submit proposals written in your voice — straight to your inbox & Telegram.
   </p>
 
   <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">

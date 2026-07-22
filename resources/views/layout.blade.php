@@ -7,11 +7,11 @@
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ url()->current() }}">
-<meta property="og:title" content="@yield('title', 'FirstBid — Upwork AI Proposal Generator & Budget Estimator')">
+<meta property="og:title" content="@yield('title', 'FirstBidIn — Upwork AI Proposal Generator & Budget Estimator')">
 <meta property="og:description" content="Win Upwork jobs in 2 minutes with AI scope breakdowns, subtask effort estimates, and account-safe proposal writing.">
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:title" content="@yield('title', 'FirstBid — Upwork AI Proposal Generator & Budget Estimator')">
+<meta property="twitter:title" content="@yield('title', 'FirstBidIn — Upwork AI Proposal Generator & Budget Estimator')">
 <meta property="twitter:description" content="Win Upwork jobs in 2 minutes with AI scope breakdowns, subtask effort estimates, and account-safe proposal writing.">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
@@ -32,7 +32,7 @@
 {
   "{{ '@' }}context": "https://schema.org",
   "{{ '@' }}type": "SoftwareApplication",
-  "name": "FirstBid AI",
+  "name": "FirstBidIn AI",
   "operatingSystem": "Web",
   "applicationCategory": "BusinessApplication",
   "description": "Account-safe Upwork AI Proposal Generator, Scope & Budget Estimator for Freelancers.",
