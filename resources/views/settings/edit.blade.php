@@ -50,8 +50,27 @@
     <textarea name="proposal_profile" required minlength="100" placeholder="Example: Freelance PHP developer, 8+ years. Laravel, CodeIgniter, WordPress, MySQL, payment integrations. Recent work: custom CRM for a UK client (tickets, digital signatures, roles)...">{{ old('proposal_profile', $user->proposal_profile) }}</textarea>
     <p class="help">Be specific — real project names and outcomes make letters that win. Generic profiles make generic letters.</p>
 
-    <label>Minimum match score (skip jobs below this, 1–10)</label>
-    <input type="number" name="min_score" min="1" max="10" value="{{ old('min_score', $user->min_score) }}" style="width:90px">
+    <label>Minimum match score</label>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="help" style="margin:0">Only jobs scored</span>
+      <select name="min_score_operator" style="width:auto">
+        <option value=">" {{ old('min_score_operator', $user->min_score_operator) === '>' ? 'selected' : '' }}>&gt;</option>
+        <option value=">=" {{ old('min_score_operator', $user->min_score_operator) === '>=' ? 'selected' : '' }}>&ge;</option>
+      </select>
+      <input type="number" name="min_score" min="1" max="10" value="{{ old('min_score', $user->min_score) }}" style="width:90px">
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:18px">
+      <input type="checkbox" name="auto_generate" value="1" style="width:auto" {{ old('auto_generate', $user->auto_generate) ? 'checked' : '' }}>
+      Automatically generate letters for matching jobs
+    </label>
+    <p class="help">Off = jobs are saved and you click Generate when you want a letter. On = letters are written automatically for jobs that pass your filters (uses your monthly quota faster).</p>
+
+    <label style="display:flex;align-items:center;gap:8px;margin-top:14px">
+      <input type="checkbox" name="skip_unverified_payment" value="1" style="width:auto" {{ old('skip_unverified_payment', $user->skip_unverified_payment) ? 'checked' : '' }}>
+      Skip jobs where client payment is not verified
+    </label>
+
     <div style="margin-top:16px"><button class="btn">Save settings</button></div>
   </div>
 </form>

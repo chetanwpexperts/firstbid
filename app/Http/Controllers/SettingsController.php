@@ -36,10 +36,15 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
-            'proposal_profile' => ['required', 'string', 'min:100', 'max:4000'],
-            'telegram_chat_id' => ['nullable', 'string', 'max:32'],
-            'min_score'        => ['required', 'integer', 'between:1,10'],
+            'proposal_profile'   => ['required', 'string', 'min:100', 'max:4000'],
+            'telegram_chat_id'   => ['nullable', 'string', 'max:32'],
+            'min_score'          => ['required', 'integer', 'between:1,10'],
+            'min_score_operator' => ['required', 'in:>,>='],
         ]);
+
+        // Checkboxes: absent from the request means unchecked (false).
+        $data['auto_generate']           = $request->boolean('auto_generate');
+        $data['skip_unverified_payment'] = $request->boolean('skip_unverified_payment');
 
         $request->user()->update($data);
 

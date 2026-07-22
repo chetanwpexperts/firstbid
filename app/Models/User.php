@@ -19,6 +19,9 @@ class User extends Authenticatable
         'proposal_profile',
         'telegram_chat_id',
         'min_score',
+        'min_score_operator',
+        'auto_generate',
+        'skip_unverified_payment',
         'plan',
         'trial_ends_at',
         'letters_used',
@@ -35,10 +38,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'trial_ends_at'     => 'datetime',
-            'quota_reset_at'    => 'datetime',
+            'email_verified_at'       => 'datetime',
+            'password'                => 'hashed',
+            'trial_ends_at'           => 'datetime',
+            'quota_reset_at'          => 'datetime',
+            'auto_generate'           => 'boolean',
+            'skip_unverified_payment' => 'boolean',
         ];
     }
 
