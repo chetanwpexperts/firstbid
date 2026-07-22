@@ -1,7 +1,7 @@
 <header class="app-header">
   <div class="header-container">
     <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}">
-      First<span class="accent">BidIn</span>
+      First<span class="accent">Bid</span><span style="color: var(--text-dark); font-weight: 800; font-size: 0.85em;">.in</span>
       <span class="ai-badge">AI 2.0</span>
     </a>
 

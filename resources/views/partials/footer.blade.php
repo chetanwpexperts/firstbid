@@ -1,11 +1,11 @@
 <footer class="app-footer">
   <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
     <div style="display: flex; align-items: center; gap: 8px;">
-      <span class="brand-logo" style="font-size: 15px;">First<span class="accent">BidIn</span></span>
+      <span class="brand-logo" style="font-size: 15px;">First<span class="accent">Bid</span><span style="color: var(--text-dark); font-weight: 800; font-size: 0.85em;">.in</span></span>
       <span>— Account-Safe Automated Job Proposal & Budget Estimator AI.</span>
     </div>
     <div style="font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);">
-      © {{ date('Y') }} FirstBidIn AI Inc. All rights reserved.
+      © {{ date('Y') }} FirstBid.in AI Inc. All rights reserved.
     </div>
   </div>
 </footer>
