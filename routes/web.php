@@ -18,6 +18,7 @@ Route::get('/', fn () => auth()->check()
 // SEO & Search Indexing Routes
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
+Route::get('/extension', fn () => view('extension'))->name('extension');
 
 // Guest routes
 Route::middleware('guest')->group(function () {
