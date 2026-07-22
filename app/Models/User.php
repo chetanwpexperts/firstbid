@@ -30,6 +30,7 @@ class User extends Authenticatable
         'last_seen_jobs_at',
         'is_approved',
         'is_admin',
+        'portfolio_projects',
     ];
 
     protected $hidden = [
@@ -50,6 +51,7 @@ class User extends Authenticatable
             'skip_unverified_payment' => 'boolean',
             'is_approved'              => 'boolean',
             'is_admin'                 => 'boolean',
+            'portfolio_projects'      => 'array',
         ];
     }
 

@@ -14,6 +14,9 @@ class UpworkJob extends Model
         'question_answers'    => 'array',
         'payment_verified'    => 'boolean',
         'task_breakdown'      => 'array',
+        'opener_hooks'        => 'array',
+        'milestones'          => 'array',
+        'matched_portfolio'   => 'array',
     ];
 
     public function user()

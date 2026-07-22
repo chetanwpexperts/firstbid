@@ -10,8 +10,11 @@
       <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Jobs Inbox</a>
       <a class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}" href="{{ route('settings') }}">Settings</a>
       @if(auth()->user()?->is_admin)
-      <a class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.users') }}">Admin</a>
+      <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }}">Users</a>
+      <a class="nav-link {{ request()->routeIs('admin.feedback') ? 'active' : '' }}" href="{{ route('admin.feedback') }}">Feedback</a>
       @endif
+
+      <button type="button" class="btn btn-ghost btn-sm" onclick="openFeedbackModal()" style="font-size: 13px; padding: 5px 11px;">💬 Feedback</button>
 
       <div class="notif-bell" id="notifBell" style="position: relative;">
         <button type="button" class="notif-toggle" onclick="toggleNotifDropdown()" aria-label="Notifications" style="background: none; border: none; font-size: 17px; cursor: pointer; color: var(--text-muted); position: relative; padding: 4px 8px;">

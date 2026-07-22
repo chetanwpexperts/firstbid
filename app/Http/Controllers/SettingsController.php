@@ -40,11 +40,20 @@ class SettingsController extends Controller
             'telegram_chat_id'   => ['nullable', 'string', 'max:32'],
             'min_score'          => ['required', 'integer', 'between:1,10'],
             'min_score_operator' => ['required', 'in:>,>='],
+            'portfolio_projects' => ['nullable', 'array'],
+            'portfolio_projects.*.title'   => ['nullable', 'string', 'max:200'],
+            'portfolio_projects.*.snippet' => ['nullable', 'string', 'max:500'],
         ]);
 
         // Checkboxes: absent from the request means unchecked (false).
         $data['auto_generate']           = $request->boolean('auto_generate');
         $data['skip_unverified_payment'] = $request->boolean('skip_unverified_payment');
+
+        if ($request->has('portfolio_projects')) {
+            $data['portfolio_projects'] = array_values(array_filter($request->input('portfolio_projects', []), function($p) {
+                return !empty($p['title']) || !empty($p['snippet']);
+            }));
+        }
 
         $request->user()->update($data);
 

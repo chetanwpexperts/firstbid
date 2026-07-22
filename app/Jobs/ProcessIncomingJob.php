@@ -92,10 +92,13 @@ class ProcessIncomingJob implements ShouldQueue
 
         // ---- Generate ----
         try {
-            $result = $ai->generate($job, $user->proposal_profile ?? '');
+            $result = $ai->generate($job, $user->proposal_profile ?? '', $user->portfolio_projects ?? []);
 
             $job->update([
                 'cover_letter'       => $result['cover_letter'],
+                'opener_hooks'       => $result['opener_hooks'] ?? null,
+                'milestones'         => $result['milestones'] ?? null,
+                'matched_portfolio'  => $result['matched_portfolio'] ?? null,
                 'question_answers'   => $result['question_answers'],
                 'bid_suggestion'     => $result['bid_suggestion'],
                 'estimated_budget'   => $result['estimated_budget'] ?? null,

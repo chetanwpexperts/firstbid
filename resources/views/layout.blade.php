@@ -2,9 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>@yield('title', 'FirstBid — Upwork AI Job Proposal & Scope Estimator')</title>
+<meta name="description" content="Account-safe Upwork AI proposal generator & scope budget calculator. Real-time job alerts, mathematical subtask estimates, and tailored cover letters.">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:title" content="@yield('title', 'FirstBid — Upwork AI Proposal Generator & Budget Estimator')">
+<meta property="og:description" content="Win Upwork jobs in 2 minutes with AI scope breakdowns, subtask effort estimates, and account-safe proposal writing.">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="@yield('title', 'FirstBid — Upwork AI Proposal Generator & Budget Estimator')">
+<meta property="twitter:description" content="Win Upwork jobs in 2 minutes with AI scope breakdowns, subtask effort estimates, and account-safe proposal writing.">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+@if(config('services.ga.measurement_id'))
+<!-- Google Analytics GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.ga.measurement_id') }}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', '{{ config('services.ga.measurement_id') }}');
+</script>
+@endif
+
+<!-- Schema.org JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "FirstBid AI",
+  "operatingSystem": "Web",
+  "applicationCategory": "BusinessApplication",
+  "description": "Account-safe Upwork AI Proposal Generator, Scope & Budget Estimator for Freelancers.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
 </head>
 <body>
   <!-- Top Progress Bar Loader -->
@@ -18,6 +54,7 @@
   </main>
 
   @include('partials.footer')
+  @include('partials.feedback-modal')
 
   <script>
   // Global Page Navigation Loader Bar

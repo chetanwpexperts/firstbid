@@ -73,4 +73,20 @@ class AdminController extends Controller
 
         return back()->with('ok', "User '{$name}' was deleted.");
     }
+
+    public function feedback(Request $request)
+    {
+        $feedbacks = \App\Models\Feedback::with('user')
+            ->latest()
+            ->paginate(15);
+
+        return view('admin.feedback', compact('feedbacks'));
+    }
+
+    public function deleteFeedback(\App\Models\Feedback $feedback)
+    {
+        $feedback->delete();
+
+        return back()->with('ok', 'Feedback record deleted.');
+    }
 }
