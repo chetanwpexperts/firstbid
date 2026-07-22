@@ -31,10 +31,14 @@
             <div style="font-size: 12.5px; color: var(--text-muted);">{{ $fb->user?->email ?? 'N/A' }}</div>
           </td>
 
-          <td style="padding: 14px 10px; font-size: 15px;">
-            @for($i = 1; $i <= 5; $i++)
-              <span style="color: {{ $i <= $fb->rating ? '#f59e0b' : '#cbd5e1' }};">★</span>
-            @endfor
+          <td style="padding: 14px 10px; font-size: 14px;">
+            @if(($fb->rating ?? 0) > 0)
+              @for($i = 1; $i <= 5; $i++)
+                <span style="color: {{ $i <= $fb->rating ? '#f59e0b' : '#cbd5e1' }}; font-size: 15px;">★</span>
+              @endfor
+            @else
+              <span style="color: var(--text-muted); font-size: 12px; font-family: var(--font-mono);">📌 Waitlist Entry</span>
+            @endif
           </td>
 
           <td style="padding: 14px 10px;">

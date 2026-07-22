@@ -21,17 +21,17 @@
     <h2 style="font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Join the Chrome Extension Waitlist</h2>
     <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Be the first to get 1-click proposal auto-fill when the Chrome Extension launches.</p>
 
-    @auth
-      <form method="POST" action="{{ route('feedback.store') }}">
-        @csrf
-        <input type="hidden" name="rating" value="5">
-        <input type="hidden" name="category" value="feature_request">
-        <input type="hidden" name="message" value="Waitlist signup for Chrome Extension early access. User: {{ auth()->user()->email }}">
-        <button class="btn" type="submit" style="width: 100%; padding: 14px; font-size: 15.5px;">⚡ Request Early Beta Access</button>
-      </form>
-    @else
-      <a class="btn" href="{{ route('register') }}" style="display: block; width: 100%; padding: 14px; font-size: 15.5px;">Start Free Trial to Join Waitlist ↗</a>
-    @endauth
+    <form method="POST" action="{{ route('feedback.store') }}" style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+      @csrf
+      <input type="hidden" name="category" value="extension_waitlist">
+      <input type="hidden" name="message" value="Requested VIP early access to Chrome Extension.">
+
+      @guest
+        <input type="email" name="email" required placeholder="Enter your email address..." style="padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; width: 100%;">
+      @endguest
+
+      <button class="btn" type="submit" style="width: 100%; padding: 14px; font-size: 15.5px;">⚡ Request Early Beta Access</button>
+    </form>
   </div>
 </div>
 

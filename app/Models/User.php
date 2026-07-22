@@ -31,6 +31,12 @@ class User extends Authenticatable
         'is_approved',
         'is_admin',
         'portfolio_projects',
+        'niche',
+        'hourly_rate',
+        'years_experience',
+        'upwork_url',
+        'phone',
+        'company_name',
     ];
 
     protected $hidden = [

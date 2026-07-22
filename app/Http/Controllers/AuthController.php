@@ -21,7 +21,9 @@ class AuthController extends Controller
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
+            'niche'    => ['nullable', 'string', 'max:150'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'terms'    => ['required', 'accepted'],
         ]);
 
         $isFirstUser = User::count() === 0;
@@ -29,6 +31,7 @@ class AuthController extends Controller
         $user = User::create([
             'name'           => $data['name'],
             'email'          => $data['email'],
+            'niche'          => $data['niche'] ?? null,
             'password'       => Hash::make($data['password']),
             'webhook_token'  => Str::random(32),
             'plan'           => 'free',

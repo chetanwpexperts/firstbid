@@ -22,10 +22,18 @@ class ProposalAI
 
         $portfolioJson = !empty($portfolioProjects) ? json_encode($portfolioProjects) : 'None provided';
 
+        $user = $job->user;
+        $nicheInfo = $user?->niche ? "Specialty/Niche: {$user->niche}" : "";
+        $rateInfo = $user?->hourly_rate ? "Target Rate: \${$user->hourly_rate}/hr" : "";
+        $expInfo = $user?->years_experience ? "Experience: {$user->years_experience}" : "";
+
         $prompt = <<<PROMPT
 You are an expert technical estimator & proposal writer for an Upwork freelancer. Sound like a real human developer — short sentences, specific, no buzzwords ("seamless", "leverage", "cutting-edge" are banned). Never open with "Hi", "Dear client", "I hope", or "I am excited".
 
 FREELANCER PROFILE:
+{$nicheInfo}
+{$rateInfo}
+{$expInfo}
 {$profile}
 
 FREELANCER PORTFOLIO PROJECTS:

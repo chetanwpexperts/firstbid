@@ -37,6 +37,12 @@ class SettingsController extends Controller
     {
         $data = $request->validate([
             'proposal_profile'   => ['required', 'string', 'min:100', 'max:4000'],
+            'niche'              => ['nullable', 'string', 'max:150'],
+            'hourly_rate'        => ['nullable', 'numeric', 'min:0', 'max:9999'],
+            'years_experience'   => ['nullable', 'string', 'max:50'],
+            'upwork_url'         => ['nullable', 'url', 'max:255'],
+            'phone'              => ['nullable', 'string', 'max:50'],
+            'company_name'       => ['nullable', 'string', 'max:100'],
             'telegram_chat_id'   => ['nullable', 'string', 'max:32'],
             'min_score'          => ['required', 'integer', 'between:1,10'],
             'min_score_operator' => ['required', 'in:>,>='],

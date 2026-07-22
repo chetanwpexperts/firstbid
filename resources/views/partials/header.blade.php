@@ -45,6 +45,7 @@
     </nav>
     @else
     <nav class="nav-links">
+      <a class="nav-link {{ request()->routeIs('extension') ? 'active' : '' }}" href="{{ route('extension') }}">Extension 🧩</a>
       <a class="nav-link" href="{{ route('login') }}">Log in</a>
       <a class="btn btn-sm" href="{{ route('register') }}">Start Free Trial</a>
     </nav>
