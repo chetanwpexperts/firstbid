@@ -8,7 +8,7 @@
   </div>
 @endif
 
-@if(session('err') || $errors->any())
+@if(session('err') || (isset($errors) && $errors->any()))
   <div class="flash-toast err" id="flashErrToast">
     <div style="display: flex; align-items: center; gap: 10px;">
       <span style="font-size: 16px;">⚠️</span>

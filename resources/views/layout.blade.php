@@ -30,14 +30,14 @@
 <!-- Schema.org JSON-LD Structured Data -->
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
+  "{{ '@' }}context": "https://schema.org",
+  "{{ '@' }}type": "SoftwareApplication",
   "name": "FirstBid AI",
   "operatingSystem": "Web",
   "applicationCategory": "BusinessApplication",
   "description": "Account-safe Upwork AI Proposal Generator, Scope & Budget Estimator for Freelancers.",
   "offers": {
-    "@type": "Offer",
+    "{{ '@' }}type": "Offer",
     "price": "0",
     "priceCurrency": "USD"
   }
