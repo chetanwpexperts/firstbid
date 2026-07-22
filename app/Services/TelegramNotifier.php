@@ -48,6 +48,41 @@ class TelegramNotifier
         }
     }
 
+    /**
+     * Light notice for a job that was captured but not auto-generated —
+     * no cover letter exists yet, so unlike sendJobAlert this is a single
+     * message with a link back to the dashboard to generate one manually.
+     */
+    public function sendJobCaptured(UpworkJob $job, ?string $chatId): void
+    {
+        if (! $chatId) {
+            return;
+        }
+
+        $flags = [];
+        if (! $job->payment_verified)                                 $flags[] = '🚩 Payment NOT verified';
+        if ($job->client_score !== null && $job->client_score < 4.0)  $flags[] = "🚩 Client rating {$job->client_score}";
+        if (($job->client_hires ?? 1) === 0)                          $flags[] = '⚠️ New client, 0 hires';
+        $flagText = $flags ? implode("\n", $flags) . "\n" : '';
+
+        $url = rtrim(config('app.url'), '/') . '/jobs/' . $job->id;
+
+        $text = sprintf(
+            "🟡 <b>New job — Score %s</b>\n%s\n💰 %s | %s\n%sTap to review &amp; generate your letter.",
+            $job->uphunt_score ?? '?',
+            e($job->title),
+            e($job->budget_display),
+            e($job->client_country ?? '?'),
+            $flagText
+        );
+
+        $this->send($chatId, $text, [
+            'inline_keyboard' => [[
+                ['text' => '📋 Review & Generate', 'url' => $url],
+            ]],
+        ]);
+    }
+
     public function sendText(?string $chatId, string $text): void
     {
         if ($chatId) {
