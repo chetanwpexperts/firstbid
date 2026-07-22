@@ -1,8 +1,19 @@
 <header class="app-header">
   <div class="header-container">
-    <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}" style="display: flex; align-items: center; gap: 10px;">
-      <img src="{{ asset('images/logo.png') }}" alt="FirstBid.in Logo" style="height: 40px; width: auto; object-fit: contain; display: block;">
-      <span class="ai-badge">AI 2.0</span>
+    <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+      <!-- Vector Lightning Badge Icon -->
+      <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #14a800 0%, #0e7a00 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(20, 168, 0, 0.25); flex-shrink: 0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--text-dark); line-height: 1;">
+          First<span style="color: var(--upwork-green);">Bid</span><span style="color: var(--text-dark); font-weight: 800;">.in</span>
+        </span>
+        <span class="ai-badge" style="font-size: 10.5px; font-family: var(--font-mono); background: var(--upwork-tint); color: var(--upwork-tint-text); border: 1px solid var(--upwork-tint-border); padding: 2px 7px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">AI 2.0</span>
+      </div>
     </a>
 
     @auth
