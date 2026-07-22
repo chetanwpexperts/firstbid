@@ -19,4 +19,12 @@ class UpworkJob extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'ready_to_generate' => 'ready',
+            default             => $this->status,
+        };
+    }
 }

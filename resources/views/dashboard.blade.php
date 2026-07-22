@@ -24,7 +24,7 @@
       <span class="score {{ $s >= 8 ? 's-hi' : ($s >= 6 ? 's-mid' : 's-low') }}">{{ $s ?? '–' }}</span>
       <span class="t">{{ $job->title }}</span>
       <span class="meta">{{ $job->budget_display }} · {{ $job->client_country ?? '?' }} · {{ $job->created_at->diffForHumans() }}</span>
-      <span class="badge {{ $job->status }}">{{ $job->status }}</span>
+      <span class="badge {{ $job->status }}">{{ $job->status_label }}</span>
     </summary>
     <div class="body">
       <div class="flagline">
@@ -43,6 +43,11 @@
         <div style="margin-top:8px;display:flex;gap:8px">
           <button class="btn ghost sm" onclick="copyVal('letter-{{ $job->id }}', this)">Copy letter</button>
           @if($job->job_url)<a class="btn sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open job on Upwork ↗</a>@endif
+        </div>
+      @elseif($job->status === 'ready_to_generate')
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <a class="btn sm" href="{{ route('jobs.show', $job->id) }}">✍️ Generate letter</a>
+          @if($job->job_url)<a class="btn ghost sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open job on Upwork ↗</a>@endif
         </div>
       @elseif($job->job_url)
         <div style="margin-top:10px"><a class="btn ghost sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open job on Upwork ↗</a></div>

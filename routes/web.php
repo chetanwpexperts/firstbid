@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/jobs/{id}', [DashboardController::class, 'show'])->name('jobs.show');
+    Route::post('/jobs/{id}/generate', [DashboardController::class, 'generate'])->name('jobs.generate');
 
     // named 'settings' (not 'settings.edit') to match layout.blade.php
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings');

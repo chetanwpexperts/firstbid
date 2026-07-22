@@ -59,6 +59,7 @@ code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px so
 .badge.notified{border-color:#bbe8c4;color:#14652a;background:#ecfdf0}
 .badge.skipped{background:#f5f5f4}
 .badge.failed{border-color:#fecaca;color:var(--red);background:#fef2f2}
+.badge.ready_to_generate{border-color:#fde68a;color:var(--amber);background:#fffbeb}
 .job .body{border-top:1px solid var(--line);padding:16px}
 .letter{white-space:pre-wrap;background:#fbfcfa;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:14px;line-height:1.65;margin-top:8px}
 .flagline{font-size:13px;margin:3px 0}

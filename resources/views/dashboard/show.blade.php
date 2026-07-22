@@ -8,7 +8,7 @@
   {{ $job->budget_display }} · {{ $job->client_country ?? 'Unknown' }} ·
   ⭐ {{ $job->client_score ?? '—' }} ({{ $job->client_hires ?? '—' }} hires)
   @if(!$job->payment_verified) · 🚩 payment not verified @endif
-  · <span class="tag {{ $job->status }}">{{ $job->status }}</span>
+  · <span class="tag {{ $job->status }}">{{ $job->status_label }}</span>
 </p>
 
 @if ($job->job_url)
@@ -21,6 +21,14 @@
   @if($job->bid_suggestion) <span class="help" style="display:inline">· {{ $job->bid_suggestion }}</span>@endif
   </h2>
   <pre class="letter" id="letter">{{ $job->cover_letter }}</pre>
+</div>
+@else
+<div class="panel" style="text-align:center;padding:28px">
+  <p class="help" style="margin-bottom:14px">No letter yet — generate one when you're ready to apply.</p>
+  <form method="POST" action="{{ route('jobs.generate', $job->id) }}">
+    @csrf
+    <button class="btn">✍️ Generate cover letter</button>
+  </form>
 </div>
 @endif
 
