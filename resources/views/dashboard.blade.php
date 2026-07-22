@@ -2,6 +2,20 @@
 @section('title', 'Jobs — FirstBid')
 @section('content')
 <h1>Job inbox</h1>
+<p class="help" style="margin-top:-10px;margin-bottom:16px">
+  @if($window === '24h') Showing jobs from the last 24 hours.
+  @elseif($window === '3d') Showing jobs from the last 3 days.
+  @elseif($window === '7d') Showing jobs from the last 7 days.
+  @else Showing all jobs.
+  @endif
+</p>
+
+<div class="window-tabs">
+  @foreach(['24h' => '24h', '3d' => '3 days', '7d' => '7 days', 'all' => 'All'] as $w => $label)
+    <a href="{{ route('dashboard', array_filter(['window' => $w, 'status' => request('status')])) }}"
+       class="{{ $window === $w ? 'on' : '' }}">{{ $label }}</a>
+  @endforeach
+</div>
 
 <div class="statgrid">
   <div class="stat"><div class="n">{{ $stats['total'] }}</div><div class="l">jobs received</div></div>

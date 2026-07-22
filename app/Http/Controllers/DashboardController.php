@@ -10,29 +10,48 @@ use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
+    private const WINDOWS = ['24h', '3d', '7d', 'all'];
+
     public function index(Request $request)
     {
         $user = $request->user();
 
-        $jobs = $user->upworkJobs()
+        $window = $request->query('window', '24h');
+        if (! in_array($window, self::WINDOWS, true)) {
+            $window = '24h';
+        }
+
+        $windowStart = match ($window) {
+            '24h'   => now()->subHours(24),
+            '3d'    => now()->subDays(3),
+            '7d'    => now()->subDays(7),
+            'all'   => null,
+        };
+
+        // Fresh builder per call — a relationship method like upworkJobs()
+        // always returns a new query, so this is safe to invoke repeatedly.
+        $windowed = fn () => $user->upworkJobs()
+            ->when($windowStart, fn ($q) => $q->where('created_at', '>=', $windowStart));
+
+        $jobs = $windowed()
             ->latest()
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
             ->paginate(15)
             ->withQueryString();
 
-        $notified = $user->upworkJobs()->where('status', 'notified')->count();
+        $notified = $windowed()->where('status', 'notified')->count();
 
         $stats = [
-            'total'    => $user->upworkJobs()->count(),
+            'total'    => $windowed()->count(),
             'letters'  => $notified,   // key used by dashboard.blade.php
             'notified' => $notified,   // alias, in case any view uses this name
-            'skipped'  => $user->upworkJobs()->where('status', 'skipped')->count(),
+            'skipped'  => $windowed()->where('status', 'skipped')->count(),
             'quota'    => max(0, $user->letters_quota - $user->letters_used),
         ];
 
         $view = View::exists('dashboard') ? 'dashboard' : 'dashboard.index';
 
-        return view($view, compact('jobs', 'stats', 'user'));
+        return view($view, compact('jobs', 'stats', 'user', 'window'));
     }
 
     public function show(Request $request, int $id)

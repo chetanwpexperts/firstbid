@@ -44,6 +44,10 @@ code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px so
 .codebox span{flex:1}
 .copybtn{flex:none;background:#fff;border:1px solid var(--line);border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer}
 .copybtn:hover{border-color:var(--green);color:var(--green-dark)}
+.window-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.window-tabs a{font-family:var(--mono);font-size:12.5px;padding:6px 12px;border:1px solid var(--line);border-radius:20px;text-decoration:none;color:var(--muted);background:#fff}
+.window-tabs a:hover{border-color:var(--green);color:var(--green-dark)}
+.window-tabs a.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;text-align:center}
 .stat .n{font-family:var(--mono);font-size:26px;font-weight:700}
