@@ -89,9 +89,5 @@
   </div>
 @endforelse
 
-@if($jobs->hasPages())
-  <div class="pager">
-    {{ $jobs->links('pagination::simple-default') }}
-  </div>
-@endif
+{{ $jobs->links('partials.pagination') }}
 @endsection

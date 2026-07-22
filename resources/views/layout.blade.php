@@ -69,9 +69,13 @@ code.k{font-family:var(--mono);font-size:12.5px;background:#eef2ec;border:1px so
 .flagline{font-size:13px;margin:3px 0}
 .qa{margin-top:14px}
 .qa .q{font-weight:600;font-size:13.5px;margin-top:10px}
-.pager{display:flex;gap:6px;margin-top:16px}
-.pager a,.pager span{padding:6px 11px;border:1px solid var(--line);border-radius:6px;font-size:13px;text-decoration:none;background:#fff}
-.pager .cur{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pager{display:flex;justify-content:center;align-items:center;gap:4px;margin-top:24px;flex-wrap:wrap}
+.pager a,.pager span{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 9px;border:1px solid var(--line);border-radius:7px;font-size:13px;font-family:var(--mono);text-decoration:none;background:#fff;color:var(--ink)}
+.pager a:hover{border-color:var(--green);color:var(--green-dark)}
+.pager .cur{background:var(--green);color:#fff;border-color:var(--green);font-weight:700}
+.pager .disabled{color:#b7c0ba;background:#fbfcfa;cursor:default}
+.pager .dots{border-color:transparent;background:none;color:var(--muted)}
+@media (max-width:480px){.pager a,.pager span{min-width:28px;height:28px;font-size:11.5px;padding:0 6px}}
 .auth-card{max-width:420px;margin:8vh auto 0}
 .auth-card .brand{font-weight:700;font-size:24px;text-align:center;display:block;margin-bottom:22px;color:var(--ink);text-decoration:none}
 .auth-card .brand span{color:var(--green)}
