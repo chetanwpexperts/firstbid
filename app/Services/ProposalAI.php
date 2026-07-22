@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 class ProposalAI
 {
     /**
-     * @return array{cover_letter:string, question_answers:array, bid_suggestion:string}
+     * @return array{cover_letter:string, question_answers:array, bid_suggestion:string, estimated_budget:string, estimated_duration:string, budget_reasoning:string, task_breakdown:array}
      */
     public function generate(UpworkJob $job, string $profile): array
     {
@@ -21,7 +21,7 @@ class ProposalAI
             ->implode("\n");
 
         $prompt = <<<PROMPT
-You are writing an Upwork proposal for this freelancer. Sound like a real human developer — short sentences, specific, no buzzwords ("seamless", "leverage", "cutting-edge" are banned). Never open with "Hi", "Dear client", "I hope", or "I am excited".
+You are an expert technical estimator & proposal writer for an Upwork freelancer. Sound like a real human developer — short sentences, specific, no buzzwords ("seamless", "leverage", "cutting-edge" are banned). Never open with "Hi", "Dear client", "I hope", or "I am excited".
 
 FREELANCER PROFILE:
 {$profile}
@@ -37,7 +37,18 @@ DESCRIPTION:
 SCREENING QUESTIONS (may be empty):
 {$questions}
 
-Rules:
+ESTIMATION & BUDGET CALCULATOR INSTRUCTIONS (DO NOT ESTIMATE BLINDLY — USE RIGOROUS MATHEMATICAL LOGIC):
+1. Analyze the job description and break down the work into 2 to 5 specific technical subtasks with estimated hours.
+2. Sum subtask hours to get TOTAL_HOURS.
+3. Calculate ESTIMATED_DURATION realistically based on TOTAL_HOURS (e.g. 1-2 Days for <= 8h, 3-5 Days for 10-20h, 7-10 Days for 25-35h, 10-14+ Days for 40+h).
+4. Calculate ESTIMATED_BUDGET logically:
+   - HOURLY JOBS: Suggest an hourly rate in the client's stated range matching freelancer profile skills.
+   - FIXED JOBS:
+     * If client budget matches work complexity (e.g. $150 for 6 hours work), set estimated_budget to "$135 fixed".
+     * If client budget is a low placeholder (e.g. $100 for a 35+ hour / 10+ day project), set estimated_budget to "$100 Milestone 1 / $600 Full Scope".
+5. Provide budget_reasoning: a 2-3 sentence mathematical & strategic justification explaining the total hours, subtask breakdown, and why this budget & duration were selected.
+
+Rules for Proposal:
 - Cover letter 120-180 words. First 2 lines must address the client's exact problem (only ~2 lines show in preview).
 - Reference max 1-2 genuinely relevant past projects from the profile. If nothing is relevant, don't force it.
 - Include one concrete first step for THIS job.
@@ -46,7 +57,15 @@ Rules:
 - bid_suggestion: one short line, e.g. "Bid \$35/hr (their range 30-60, mid-low wins here)".
 
 Respond ONLY with valid JSON, no markdown fences:
-{"cover_letter":"...","question_answers":[{"position":0,"answer":"..."}],"bid_suggestion":"..."}
+{
+  "cover_letter": "...",
+  "question_answers": [{"position":0, "answer":"..."}],
+  "bid_suggestion": "...",
+  "estimated_budget": "$120 fixed",
+  "estimated_duration": "3-5 Days (16 Hours)",
+  "budget_reasoning": "Work breaks down into 3 tasks totaling 16 hours. At competitive rates, a bid of $120 delivered in 4 days provides great value.",
+  "task_breakdown": [{"task": "Backend API integration", "hours": 8}, {"task": "UI implementation", "hours": 8}]
+}
 PROMPT;
 
         $response = Http::timeout(90)
@@ -57,7 +76,7 @@ PROMPT;
             ])
             ->post('https://api.anthropic.com/v1/messages', [
                 'model'      => config('services.anthropic.model', 'claude-sonnet-4-6'),
-                'max_tokens' => 1200,
+                'max_tokens' => 1400,
                 'messages'   => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
@@ -80,9 +99,13 @@ PROMPT;
         }
 
         return [
-            'cover_letter'     => $data['cover_letter'],
-            'question_answers' => $data['question_answers'] ?? [],
-            'bid_suggestion'   => $data['bid_suggestion'] ?? '',
+            'cover_letter'       => $data['cover_letter'],
+            'question_answers'   => $data['question_answers'] ?? [],
+            'bid_suggestion'     => $data['bid_suggestion'] ?? '',
+            'estimated_budget'   => $data['estimated_budget'] ?? '',
+            'estimated_duration' => $data['estimated_duration'] ?? '',
+            'budget_reasoning'  => $data['budget_reasoning'] ?? '',
+            'task_breakdown'     => $data['task_breakdown'] ?? [],
         ];
     }
 }

@@ -47,6 +47,34 @@
         @if($job->bid_suggestion) · 💰 {{ $job->bid_suggestion }} @endif
       </div>
 
+      @if($job->estimated_budget || $job->estimated_duration)
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 14px; margin-top: 12px; font-size: 13.5px;">
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; font-weight: 600; color: #15803d;">
+            @if($job->estimated_budget)
+              <div>💰 Recommended Bid: <span style="color: #166534; font-family: var(--mono);">{{ $job->estimated_budget }}</span></div>
+            @endif
+            @if($job->estimated_duration)
+              <div>⏱️ Estimated Duration: <span style="color: #166534; font-family: var(--mono);">{{ $job->estimated_duration }}</span></div>
+            @endif
+          </div>
+          @if($job->budget_reasoning)
+            <div style="font-size: 13px; color: #166534; line-height: 1.5; margin-top: 4px;">
+              💡 <b>AI Pricing Strategy:</b> {{ $job->budget_reasoning }}
+            </div>
+          @endif
+          @if(!empty($job->task_breakdown))
+            <div style="margin-top: 8px; font-size: 12px; color: var(--muted); font-family: var(--mono);">
+              📋 <b>Task Breakdown:</b>
+              <ul style="margin-left: 18px; margin-top: 3px;">
+                @foreach($job->task_breakdown as $t)
+                  <li>{{ $t['task'] ?? 'Subtask' }}: ~{{ $t['hours'] ?? 0 }}h</li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
+        </div>
+      @endif
+
       @if($job->skip_reason)
         <p class="help">Reason: {{ $job->skip_reason }}</p>
       @endif

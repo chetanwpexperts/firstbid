@@ -102,10 +102,14 @@ class DashboardController extends Controller
             $result = $ai->generate($job, $user->proposal_profile ?? '');
 
             $job->update([
-                'cover_letter'     => $result['cover_letter'],
-                'question_answers' => $result['question_answers'],
-                'bid_suggestion'   => $result['bid_suggestion'],
-                'status'           => 'generated',
+                'cover_letter'       => $result['cover_letter'],
+                'question_answers'   => $result['question_answers'],
+                'bid_suggestion'     => $result['bid_suggestion'],
+                'estimated_budget'   => $result['estimated_budget'] ?? null,
+                'estimated_duration' => $result['estimated_duration'] ?? null,
+                'budget_reasoning'  => $result['budget_reasoning'] ?? null,
+                'task_breakdown'     => $result['task_breakdown'] ?? null,
+                'status'             => 'generated',
             ]);
 
             $user->increment('letters_used');

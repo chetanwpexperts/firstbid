@@ -13,6 +13,7 @@ class UpworkJob extends Model
         'screening_questions' => 'array',
         'question_answers'    => 'array',
         'payment_verified'    => 'boolean',
+        'task_breakdown'      => 'array',
     ];
 
     public function user()
