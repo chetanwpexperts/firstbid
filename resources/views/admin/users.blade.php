@@ -1,108 +1,110 @@
 @extends('layout')
 
-@section('title', 'Admin — User Management')
+@section('title', 'Admin Portal — User Management')
 
 @section('content')
-<div class="panel">
-  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+<div class="glass-panel">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
     <div>
-      <h1 style="margin-bottom: 4px;">User Management</h1>
-      <p class="help">Approve users, manage subscriptions, and configure access limits.</p>
+      <h1 style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 4px;">User Management</h1>
+      <p style="color: var(--text-muted); font-size: 13px;">Approve users, assign admin access, and manage letter quotas.</p>
     </div>
     
     <form method="GET" action="{{ route('admin.users') }}" style="display: flex; gap: 8px;">
       <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." style="width: 240px;">
-      <button class="btn sm" type="submit">Search</button>
+      <button class="btn btn-sm" type="submit">Search</button>
     </form>
   </div>
 
-  <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; text-align: left;">
-    <thead>
-      <tr style="border-bottom: 2px solid var(--line); font-family: var(--mono); color: var(--muted); font-size: 11px; text-transform: uppercase;">
-        <th style="padding: 10px 8px;">User</th>
-        <th style="padding: 10px 8px;">Status</th>
-        <th style="padding: 10px 8px;">Role</th>
-        <th style="padding: 10px 8px;">Plan & Quota</th>
-        <th style="padding: 10px 8px;">Registered</th>
-        <th style="padding: 10px 8px; text-align: right;">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      @forelse($users as $u)
-      <tr style="border-bottom: 1px solid var(--line);">
-        <td style="padding: 12px 8px;">
-          <div style="font-weight: 600; color: var(--ink);">{{ $u->name }}</div>
-          <div style="font-size: 12px; color: var(--muted);">{{ $u->email }}</div>
-        </td>
-        
-        <td style="padding: 12px 8px;">
-          @if($u->is_approved)
-            <span class="badge notified">Approved</span>
-          @else
-            <span class="badge skipped" style="color: var(--amber); border-color: #fcd34d; background: #fffbeb;">Pending</span>
-          @endif
-        </td>
-
-        <td style="padding: 12px 8px;">
-          @if($u->is_admin)
-            <span class="badge" style="background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;">Admin</span>
-          @else
-            <span class="badge">User</span>
-          @endif
-        </td>
-
-        <td style="padding: 12px 8px;">
-          <form method="POST" action="{{ route('admin.users.update', $u->id) }}" style="display: flex; gap: 6px; align-items: center;">
-            @csrf
-            <select name="plan" style="font-size: 12px; padding: 3px 6px; border-radius: 5px; border: 1px solid var(--line);">
-              <option value="free" {{ $u->plan === 'free' ? 'selected' : '' }}>Free</option>
-              <option value="pro" {{ $u->plan === 'pro' ? 'selected' : '' }}>Pro</option>
-            </select>
-            <input type="number" name="letters_quota" value="{{ $u->letters_quota }}" title="Letters Quota" style="width: 65px; font-size: 12px; padding: 3px 6px; border-radius: 5px; border: 1px solid var(--line);">
-            <button class="btn ghost sm" type="submit" style="padding: 3px 7px;">Save</button>
-          </form>
-          <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">Used: {{ $u->letters_used }} / {{ $u->letters_quota }}</div>
-        </td>
-
-        <td style="padding: 12px 8px; font-family: var(--mono); font-size: 12px; color: var(--muted);">
-          {{ $u->created_at->format('M d, Y') }}
-        </td>
-
-        <td style="padding: 12px 8px; text-align: right;">
-          <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
-            <form method="POST" action="{{ route('admin.users.toggle-approval', $u->id) }}">
-              @csrf
-              <button class="btn sm {{ $u->is_approved ? 'ghost' : '' }}" type="submit" style="{{ $u->is_approved ? '' : 'background: #14a800;' }}">
-                {{ $u->is_approved ? 'Revoke' : 'Approve' }}
-              </button>
-            </form>
-
-            @if(auth()->id() !== $u->id)
-            <form method="POST" action="{{ route('admin.users.toggle-admin', $u->id) }}">
-              @csrf
-              <button class="btn ghost sm" type="submit">
-                {{ $u->is_admin ? 'Demote' : 'Make Admin' }}
-              </button>
-            </form>
-
-            <form method="POST" action="{{ route('admin.users.delete', $u->id) }}" onsubmit="return confirm('Delete user {{ $u->name }}? This action cannot be undone.');">
-              @csrf
-              @method('DELETE')
-              <button class="btn ghost sm" type="submit" style="color: var(--red); border-color: #fecaca;">Delete</button>
-            </form>
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; text-align: left;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--border); font-family: var(--font-mono); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+          <th style="padding: 12px 10px;">User</th>
+          <th style="padding: 12px 10px;">Status</th>
+          <th style="padding: 12px 10px;">Role</th>
+          <th style="padding: 12px 10px;">Plan & Quota</th>
+          <th style="padding: 12px 10px;">Registered</th>
+          <th style="padding: 12px 10px; text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @forelse($users as $u)
+        <tr style="border-bottom: 1px solid var(--border);">
+          <td style="padding: 14px 10px;">
+            <div style="font-weight: 600; color: #fff;">{{ $u->name }}</div>
+            <div style="font-size: 12px; color: var(--text-muted);">{{ $u->email }}</div>
+          </td>
+          
+          <td style="padding: 14px 10px;">
+            @if($u->is_approved)
+              <span class="badge badge-notified">Approved</span>
+            @else
+              <span class="badge badge-pending">Pending</span>
             @endif
-          </div>
-        </td>
-      </tr>
-      @empty
-      <tr>
-        <td colspan="6" style="padding: 20px; text-align: center; color: var(--muted);">No users found.</td>
-      </tr>
-      @endforelse
-    </tbody>
-  </table>
+          </td>
 
-  <div style="margin-top: 16px;">
+          <td style="padding: 14px 10px;">
+            @if($u->is_admin)
+              <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4);">Admin</span>
+            @else
+              <span class="badge badge-skipped">User</span>
+            @endif
+          </td>
+
+          <td style="padding: 14px 10px;">
+            <form method="POST" action="{{ route('admin.users.update', $u->id) }}" style="display: flex; gap: 6px; align-items: center;">
+              @csrf
+              <select name="plan" style="font-size: 12px; padding: 4px 8px; border-radius: 6px; width: 75px;">
+                <option value="free" {{ $u->plan === 'free' ? 'selected' : '' }}>Free</option>
+                <option value="pro" {{ $u->plan === 'pro' ? 'selected' : '' }}>Pro</option>
+              </select>
+              <input type="number" name="letters_quota" value="{{ $u->letters_quota }}" title="Letters Quota" style="width: 70px; font-size: 12px; padding: 4px 8px; border-radius: 6px;">
+              <button class="btn btn-ghost btn-sm" type="submit" style="padding: 4px 8px;">Save</button>
+            </form>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px; font-family: var(--font-mono);">Used: {{ $u->letters_used }} / {{ $u->letters_quota }}</div>
+          </td>
+
+          <td style="padding: 14px 10px; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+            {{ $u->created_at->format('M d, Y') }}
+          </td>
+
+          <td style="padding: 14px 10px; text-align: right;">
+            <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+              <form method="POST" action="{{ route('admin.users.toggle-approval', $u->id) }}">
+                @csrf
+                <button class="btn btn-sm {{ $u->is_approved ? 'btn-ghost' : '' }}" type="submit">
+                  {{ $u->is_approved ? 'Revoke' : 'Approve' }}
+                </button>
+              </form>
+
+              @if(auth()->id() !== $u->id)
+              <form method="POST" action="{{ route('admin.users.toggle-admin', $u->id) }}">
+                @csrf
+                <button class="btn btn-ghost btn-sm" type="submit">
+                  {{ $u->is_admin ? 'Demote' : 'Make Admin' }}
+                </button>
+              </form>
+
+              <form method="POST" action="{{ route('admin.users.delete', $u->id) }}" onsubmit="return confirm('Delete user {{ $u->name }}? This action cannot be undone.');">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+              @endif
+            </div>
+          </td>
+        </tr>
+        @empty
+        <tr>
+          <td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">No users found.</td>
+        </tr>
+        @endforelse
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top: 20px;">
     {{ $users->links() }}
   </div>
 </div>

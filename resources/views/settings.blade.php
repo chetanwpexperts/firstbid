@@ -1,58 +1,76 @@
 @extends('layout')
-@section('title', 'Settings — FirstBid')
-@section('content')
-<h1>Settings</h1>
 
-<div class="panel">
-  <h2>1 · Your webhook URL</h2>
-  <p class="help">Paste this into UpHunt → Notification Settings → Webhook → <b>Set</b>. Every matched job will be sent here automatically.</p>
-  <div class="copyrow">
-    <input type="text" id="whurl" readonly value="{{ url('/api/hook/' . $user->webhook_token) }}">
-    <button class="btn ghost sm" onclick="copyVal('whurl', this)">Copy</button>
+@section('title', 'Settings — FirstBid AI')
+
+@section('content')
+<h1 style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 20px;">Account & AI Settings</h1>
+
+<div class="glass-panel">
+  <h2 style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--emerald-light); margin-bottom: 8px;">1 · Your Personal Webhook URL</h2>
+  <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 12px;">Paste this URL into UpHunt → Notification Settings → Webhook. Job alerts will stream into your inbox automatically.</p>
+  
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <input type="text" id="whurl" readonly value="{{ url('/api/hook/' . $user->webhook_token) }}" style="font-family: var(--font-mono); font-size: 13px;">
+    <button class="btn btn-ghost btn-sm" onclick="copyVal('whurl', this)" style="flex: none;">Copy URL</button>
   </div>
-  <p class="help">Keep it secret — anyone with this URL can send jobs to your account.</p>
+  <p style="font-size: 12px; color: var(--text-dim); margin-top: 6px;">Keep this URL private — anyone with this URL can send job webhooks to your account.</p>
 </div>
 
 <form method="POST" action="{{ route('settings.update') }}">
   @csrf
-  <div class="panel">
-    <h2>2 · Your profile (the AI writes letters from this)</h2>
-    <label>Describe yourself: skills, years, 3–5 real past projects, working style</label>
-    <textarea name="proposal_profile" rows="10" required placeholder="Example: Freelance PHP developer, 8+ years. Laravel, CodeIgniter, WordPress, MySQL, payment integrations. Recent work: custom CRM for a UK client (tickets, digital signatures, roles)...">{{ old('proposal_profile', $user->proposal_profile) }}</textarea>
-    <p class="help">Be specific — real project names and outcomes make letters that win. Generic profiles make generic letters.</p>
+  <div class="glass-panel">
+    <h2 style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--emerald-light); margin-bottom: 8px;">2 · Freelancer AI Profile</h2>
+    <label class="form-label">Describe your core skills, years of experience, past projects, and working style:</label>
+    <textarea name="proposal_profile" rows="9" required placeholder="Example: Freelance Full-Stack PHP & Laravel developer, 8+ years. Specialized in high-speed web apps, MySQL optimization, and payment APIs. Recent work: Custom CRM for a UK client with real-time tickets and digital signatures...">{{ old('proposal_profile', $user->proposal_profile) }}</textarea>
+    <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 6px;">Be specific — real project details produce winning, tailored proposals.</p>
 
-    <label>Minimum match score (skip jobs below this, 1–10)</label>
-    <input type="number" name="min_score" min="1" max="10" value="{{ old('min_score', $user->min_score) }}" style="max-width:110px">
+    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
+      <label class="form-label">Minimum Match Score Filter (1–10):</label>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <select name="min_score_operator" style="max-width: 90px;">
+          <option value=">=" {{ old('min_score_operator', $user->min_score_operator) === '>=' ? 'selected' : '' }}>&gt;=</option>
+          <option value=">" {{ old('min_score_operator', $user->min_score_operator) === '>' ? 'selected' : '' }}>&gt;</option>
+        </select>
+        <input type="number" name="min_score" min="1" max="10" value="{{ old('min_score', $user->min_score) }}" style="max-width: 100px;">
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-main); font-size: 14px;">
+        <input type="checkbox" name="skip_unverified_payment" value="1" {{ old('skip_unverified_payment', $user->skip_unverified_payment) ? 'checked' : '' }} style="width: auto;">
+        <span>Only process <b>Payment Verified</b> jobs (skip unverified client listings to protect quota)</span>
+      </label>
+
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--text-main); font-size: 14px; margin-top: 12px;">
+        <input type="checkbox" name="auto_generate" value="1" {{ old('auto_generate', $user->auto_generate) ? 'checked' : '' }} style="width: auto;">
+        <span>Automatically generate AI proposal when alert arrives (uncheck to generate manually on-demand)</span>
+      </label>
+    </div>
   </div>
 
-  <div class="panel">
-    <h2>3 · Telegram alerts</h2>
-    <label>Your Telegram chat ID</label>
-    <input type="text" name="telegram_chat_id" value="{{ old('telegram_chat_id', $user->telegram_chat_id) }}" placeholder="e.g. 6234567890" style="max-width:260px">
-    <p class="help">
-      How to get it: open Telegram → search <code class="k">{{ config('services.telegram.bot_name', '@your_firstbid_bot') }}</code>
-      → press <b>Start</b> → send any message → then open
-      <code class="k">https://api.telegram.org/bot&lt;token&gt;/getUpdates</code> and copy <code class="k">"chat":{"id": ... }</code>.
-      (In the next version this becomes one click.)
-    </p>
-    <div style="margin-top:10px;display:flex;gap:8px">
-      <button class="btn" type="submit">Save settings</button>
+  <div class="glass-panel">
+    <h2 style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--emerald-light); margin-bottom: 8px;">3 · Telegram Alert Delivery</h2>
+    <label class="form-label">Your Telegram Chat ID:</label>
+    <input type="text" name="telegram_chat_id" value="{{ old('telegram_chat_id', $user->telegram_chat_id) }}" placeholder="e.g. 6234567890" style="max-width: 320px;">
+    
+    <div style="margin-top: 16px;">
+      <button class="btn" type="submit">Save All Settings</button>
     </div>
   </div>
 </form>
 
-<form method="POST" action="{{ route('settings.testTelegram') }}" class="panel">
+<form method="POST" action="{{ route('settings.testTelegram') }}" class="glass-panel">
   @csrf
-  <h2>4 · Test</h2>
-  <p class="help" style="margin-bottom:10px">Sends a test message to your saved chat ID.</p>
-  <button class="btn ghost" type="submit">Send test message</button>
+  <h2 style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--emerald-light); margin-bottom: 8px;">4 · Test Telegram Connection</h2>
+  <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px;">Send a test message to your saved Telegram chat ID to verify delivery.</p>
+  <button class="btn btn-ghost" type="submit">Send Test Message 📲</button>
 </form>
 
-<div class="panel">
-  <h2>Plan</h2>
-  <p style="font-size:14px">
-    <b style="text-transform:capitalize">{{ $user->plan }}</b> —
-    {{ $user->letters_used }} / {{ $user->letters_quota }} letters used this month.
+<div class="glass-panel">
+  <h2 style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;">Plan & Usage</h2>
+  <p style="font-size: 15px; color: #fff;">
+    Current Plan: <b style="text-transform: uppercase; color: var(--emerald-light);">{{ $user->plan }}</b> —
+    <span style="font-family: var(--font-mono);">{{ $user->letters_used }} / {{ $user->letters_quota }}</span> proposals used this month.
   </p>
 </div>
 @endsection

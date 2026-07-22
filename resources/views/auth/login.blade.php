@@ -1,19 +1,33 @@
 @extends('layout')
-@section('title', 'Log in — FirstBid')
+
+@section('title', 'Log In — FirstBid AI')
+
 @section('content')
-<div class="auth-card">
-  <a class="brand" href="/">First<span>Bid</span></a>
-  <div class="panel">
-    <h1>Log in</h1>
+<div style="max-width: 420px; margin: 60px auto 0;">
+  <div class="glass-panel" style="padding: 32px 28px;">
+    <h1 style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 6px; text-align: center;">Welcome Back</h1>
+    <p style="font-size: 13.5px; color: var(--text-muted); text-align: center; margin-bottom: 24px;">Log in to access your AI job inbox & proposal tools.</p>
+
     <form method="POST" action="{{ route('login') }}">
       @csrf
-      <label>Email</label>
-      <input type="email" name="email" value="{{ old('email') }}" required>
-      <label>Password</label>
-      <input type="password" name="password" required>
-      <div style="margin-top:18px"><button class="btn" type="submit">Log in</button></div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" value="{{ old('email') }}" required placeholder="you@example.com">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" required placeholder="••••••••">
+      </div>
+
+      <div style="margin-top: 22px;">
+        <button class="btn" type="submit" style="width: 100%; padding: 12px; font-size: 15px;">Log In ↗</button>
+      </div>
     </form>
-    <p class="help" style="margin-top:14px">New here? <a href="{{ route('register') }}">Create an account</a></p>
+
+    <p style="font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 20px;">
+      Don't have an account? <a href="{{ route('register') }}" style="color: var(--emerald-light);">Start 30-Day Free Trial</a>
+    </p>
   </div>
 </div>
 @endsection
