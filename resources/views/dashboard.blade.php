@@ -52,8 +52,10 @@
   </div>
 @endif
 
+<!-- Job List Container with Selective Blur -->
+<div class="job-list">
 @forelse($jobs as $job)
-  <details class="glass-panel" style="margin-bottom: 16px; padding: 0; overflow: hidden;">
+  <details class="glass-panel job-card" style="margin-bottom: 0; padding: 0; overflow: hidden;">
     <summary style="list-style: none; cursor: pointer; padding: 18px 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; user-select: none;">
       @php $s = $job->uphunt_score; @endphp
       <span class="badge" style="font-size: 13px; padding: 5px 12px; font-weight: 800; font-family: var(--font-mono); {{ $s >= 8 ? 'background: var(--upwork-tint); color: var(--upwork-tint-text); border: 1px solid var(--upwork-tint-border);' : ($s >= 6 ? 'background: var(--amber-tint); color: var(--amber); border: 1px solid var(--amber-border);' : 'background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border);') }}">
@@ -92,7 +94,7 @@
           @endif
           @if(!empty($job->task_breakdown))
             <div style="margin-top: 14px;">
-              <div style="font-size: 12.5px; font-weight: 700; color: var(--upwork-tint-text); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 6px;">📋 Task Breakdown:</div>
+              <div style="font-size: 12.5px; font-weight: 700; color: var(--upwork-tint-text); text-transform: uppercase; font-family: var(--font-mono); margin-bottom: 8px;">📋 Task Breakdown:</div>
               <div class="ai-task-grid">
                 @foreach($job->task_breakdown as $t)
                   <div class="ai-task-card">
@@ -137,15 +139,21 @@
       @endif
 
       @if(!empty($job->question_answers))
-        <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
-          <h2 style="font-size: 12.5px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 700;">Screening Answers</h2>
+        <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 18px;">
+          <h2 style="font-size: 13px; font-weight: 800; color: var(--text-dark); margin-bottom: 14px;">
+            📝 Screening Questions & Draft Answers
+          </h2>
           @foreach($job->question_answers as $a)
             @php
               $q = collect($job->screening_questions)->firstWhere('position', $a['position'] ?? -1);
             @endphp
-            <div style="font-weight: 600; font-size: 13.5px; color: var(--text-dark); margin-top: 8px;">❓ {{ $q['question'] ?? 'Question' }}</div>
-            <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13.5px; color: var(--text-main); margin-top: 4px;" id="qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}">{{ $a['answer'] ?? '' }}</div>
-            <button class="btn btn-ghost btn-sm" style="margin-top: 6px;" onclick="copyVal('qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}', this)">Copy Answer</button>
+            <div class="screening-card">
+              <div class="screening-header">
+                <div class="screening-question">❓ {{ $q['question'] ?? 'Question' }}</div>
+                <button class="btn btn-ghost btn-sm" onclick="copyVal('qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}', this)" style="padding: 4px 10px; font-size: 12px;">Copy Answer</button>
+              </div>
+              <div class="screening-answer" id="qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}">{{ $a['answer'] ?? '' }}</div>
+            </div>
           @endforeach
         </div>
       @endif
@@ -156,6 +164,7 @@
     No jobs captured in this time window. Once your webhook URL is set in UpHunt or RSS, matching jobs will appear here automatically.
   </div>
 @endforelse
+</div>
 
 <div style="margin-top: 24px;">
   {{ $jobs->links('partials.pagination') }}

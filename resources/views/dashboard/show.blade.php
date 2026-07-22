@@ -40,7 +40,7 @@
   </div>
 </div>
 
-<!-- Section 1: AI Budget & Scope Estimator Card -->
+<!-- Section 1: AI Scope & Budget Breakdown Card -->
 @if($job->estimated_budget || $job->estimated_duration || !empty($job->task_breakdown))
 <div class="ai-estimator-box" style="margin-bottom: 24px;">
   <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
@@ -123,13 +123,15 @@
     📝 Screening Questions & AI Draft Answers
   </h2>
 
-  <div style="display: flex; flex-direction: column; gap: 18px;">
+  <div style="display: flex; flex-direction: column; gap: 14px;">
     @foreach ($job->question_answers as $i => $qa)
       @php $q = collect($job->screening_questions)->firstWhere('position', $qa['position'] ?? -1); @endphp
-      <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 18px;">
-        <div style="font-weight: 700; color: var(--text-dark); font-size: 14.5px; margin-bottom: 8px;">❓ {{ $q['question'] ?? 'Question' }}</div>
-        <div style="white-space: pre-wrap; font-size: 14px; color: var(--text-main); line-height: 1.65; margin-bottom: 12px;" id="qa{{ $i }}">{{ $qa['answer'] ?? '' }}</div>
-        <button class="btn btn-ghost btn-sm" onclick="copyText('qa{{ $i }}', this)">Copy Answer</button>
+      <div class="screening-card">
+        <div class="screening-header">
+          <div class="screening-question">❓ {{ $q['question'] ?? 'Question' }}</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyText('qa{{ $i }}', this)" style="padding: 4px 10px; font-size: 12px;">Copy Answer</button>
+        </div>
+        <div class="screening-answer" id="qa{{ $i }}">{{ $qa['answer'] ?? '' }}</div>
       </div>
     @endforeach
   </div>
