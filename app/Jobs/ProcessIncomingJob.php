@@ -45,12 +45,36 @@ class ProcessIncomingJob implements ShouldQueue
             $user->forceFill(['letters_used' => 0, 'quota_reset_at' => now()->addMonth()])->save();
         }
 
-        // ---- Filters ----
-        if ($job->uphunt_score !== null && $job->uphunt_score < $user->min_score) {
-            $job->update(['status' => 'skipped', 'skip_reason' => "score {$job->uphunt_score} < {$user->min_score}"]);
+        // ---- Filters (checked before any generation happens) ----
+        if ($user->skip_unverified_payment && ! $job->payment_verified) {
+            $job->update(['status' => 'skipped', 'skip_reason' => 'payment not verified']);
             return;
         }
 
+        // Email-source jobs have uphunt_score = null (no score available) —
+        // null must pass this filter rather than being skipped.
+        if ($job->uphunt_score !== null) {
+            $passes = $user->min_score_operator === '>'
+                ? $job->uphunt_score > $user->min_score
+                : $job->uphunt_score >= $user->min_score;
+            if (! $passes) {
+                $job->update(['status' => 'skipped', 'skip_reason' => "score {$job->uphunt_score} does not meet your {$user->min_score_operator}{$user->min_score} filter"]);
+                return;
+            }
+        }
+
+        // ---- Default: capture the job, let the user click Generate ----
+        if (! $user->auto_generate) {
+            $job->update(['status' => 'ready_to_generate']);
+            try {
+                $telegram->sendJobCaptured($job->fresh('user'), $user->telegram_chat_id);
+            } catch (\Throwable $e) {
+                Log::warning("Telegram capture notice failed for job {$job->id}: " . $e->getMessage());
+            }
+            return;
+        }
+
+        // ---- Opted into auto-generate: same quota-gated flow as before ----
         if ($user->letters_used >= $user->letters_quota) {
             $job->update(['status' => 'skipped', 'skip_reason' => 'monthly quota reached']);
             try {
