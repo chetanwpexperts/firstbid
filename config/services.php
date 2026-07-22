@@ -57,7 +57,10 @@ return [
     Freelance PHP/web developer (chetanbuilds.com), 8+ years. Core stack: Laravel (up to v12/PHP 8.2), CodeIgniter 3, WordPress custom themes & plugins, MySQL, Razorpay/payment integrations, REST APIs.
     Recent work: complete custom CRM from scratch (pure PHP MVC) for a UK consulting client — tickets, site-visit reports with digital signatures, roles/permissions. Building OutraqHQ, my own Laravel 12 HR SaaS (billing, bulk imports, leave management). Student self-service portal (CodeIgniter 3) for a govt org: OTP registration, admissions, exam proctoring, online fee payment. Custom WordPress theme conversion for a cloud-storage company. WooCommerce video-invitation plugin incl. RTL/Hebrew fixes.
     Style: fast communication, daily updates, clean handover. Comfortable in legacy codebases.
-    TXT),
+TXT),
+    ],
+    'ga' => [
+        'measurement_id' => env('GA_MEASUREMENT_ID'),
     ],
 
 ];
