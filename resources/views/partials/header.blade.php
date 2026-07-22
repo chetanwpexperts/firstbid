@@ -1,6 +1,6 @@
 <header class="app-header">
   <div class="header-container">
-    <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+    <a class="brand-logo" href="{{ auth()->check() ? route('dashboard') : '/' }}" style="display: flex; align-items: center; gap: 0px; text-decoration: none;">
       <!-- Vector Lightning Badge Icon -->
       <div style="width: 38px; height: 38px; background: linear-gradient(135deg, #14a800 0%, #0e7a00 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(20, 168, 0, 0.25); flex-shrink: 0;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

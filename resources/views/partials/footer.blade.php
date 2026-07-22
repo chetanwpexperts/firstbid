@@ -1,6 +1,6 @@
 <footer class="app-footer">
   <div style="max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-    <div style="display: flex; align-items: center; gap: 10px;">
+    <div style="display: flex; align-items: center; gap: 0px;">
       <!-- Vector Lightning Badge Icon -->
       <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #14a800 0%, #0e7a00 100%); border-radius: 7px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(20, 168, 0, 0.2); flex-shrink: 0;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
