@@ -6,20 +6,20 @@
 <div class="glass-panel">
   <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
     <div>
-      <h1 style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 4px;">User Management</h1>
-      <p style="color: var(--text-muted); font-size: 13px;">Approve users, assign admin access, and manage letter quotas.</p>
+      <h1 style="font-size: 24px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px;">User Management</h1>
+      <p style="color: var(--text-muted); font-size: 14px;">Approve users, assign admin access, and manage letter quotas.</p>
     </div>
     
     <form method="GET" action="{{ route('admin.users') }}" style="display: flex; gap: 8px;">
-      <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." style="width: 240px;">
+      <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name or email..." style="width: 250px;">
       <button class="btn btn-sm" type="submit">Search</button>
     </form>
   </div>
 
   <div style="overflow-x: auto;">
-    <table style="width: 100%; border-collapse: collapse; font-size: 13.5px; text-align: left;">
+    <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
       <thead>
-        <tr style="border-bottom: 1px solid var(--border); font-family: var(--font-mono); color: var(--text-muted); font-size: 11px; text-transform: uppercase;">
+        <tr style="border-bottom: 2px solid var(--border); font-family: var(--font-mono); color: var(--text-muted); font-size: 11.5px; text-transform: uppercase;">
           <th style="padding: 12px 10px;">User</th>
           <th style="padding: 12px 10px;">Status</th>
           <th style="padding: 12px 10px;">Role</th>
@@ -32,8 +32,8 @@
         @forelse($users as $u)
         <tr style="border-bottom: 1px solid var(--border);">
           <td style="padding: 14px 10px;">
-            <div style="font-weight: 600; color: #fff;">{{ $u->name }}</div>
-            <div style="font-size: 12px; color: var(--text-muted);">{{ $u->email }}</div>
+            <div style="font-weight: 700; color: var(--text-dark);">{{ $u->name }}</div>
+            <div style="font-size: 12.5px; color: var(--text-muted);">{{ $u->email }}</div>
           </td>
           
           <td style="padding: 14px 10px;">
@@ -46,7 +46,7 @@
 
           <td style="padding: 14px 10px;">
             @if($u->is_admin)
-              <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.4);">Admin</span>
+              <span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;">Admin</span>
             @else
               <span class="badge badge-skipped">User</span>
             @endif
@@ -55,17 +55,17 @@
           <td style="padding: 14px 10px;">
             <form method="POST" action="{{ route('admin.users.update', $u->id) }}" style="display: flex; gap: 6px; align-items: center;">
               @csrf
-              <select name="plan" style="font-size: 12px; padding: 4px 8px; border-radius: 6px; width: 75px;">
+              <select name="plan" style="font-size: 12.5px; padding: 4px 8px; border-radius: 6px; width: 75px;">
                 <option value="free" {{ $u->plan === 'free' ? 'selected' : '' }}>Free</option>
                 <option value="pro" {{ $u->plan === 'pro' ? 'selected' : '' }}>Pro</option>
               </select>
-              <input type="number" name="letters_quota" value="{{ $u->letters_quota }}" title="Letters Quota" style="width: 70px; font-size: 12px; padding: 4px 8px; border-radius: 6px;">
+              <input type="number" name="letters_quota" value="{{ $u->letters_quota }}" title="Letters Quota" style="width: 70px; font-size: 12.5px; padding: 4px 8px; border-radius: 6px;">
               <button class="btn btn-ghost btn-sm" type="submit" style="padding: 4px 8px;">Save</button>
             </form>
-            <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px; font-family: var(--font-mono);">Used: {{ $u->letters_used }} / {{ $u->letters_quota }}</div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 3px; font-family: var(--font-mono);">Used: {{ $u->letters_used }} / {{ $u->letters_quota }}</div>
           </td>
 
-          <td style="padding: 14px 10px; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);">
+          <td style="padding: 14px 10px; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted);">
             {{ $u->created_at->format('M d, Y') }}
           </td>
 
