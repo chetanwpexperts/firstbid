@@ -3,7 +3,12 @@
 @section('title', 'FirstBid — Apply to Upwork Jobs in 2 Minutes with AI Scope & Budget Estimator')
 
 @section('content')
-<div style="text-align: center; padding: 40px 0 50px;">
+<!-- Promotional Launch Banner -->
+<div style="background: linear-gradient(90deg, #14a800 0%, #0e7a00 100%); color: #ffffff; text-align: center; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; margin-bottom: 24px; box-shadow: 0 4px 14px rgba(20, 168, 0, 0.25); display: flex; align-items: center; justify-content: center; gap: 8px;">
+  <span>🎉 <b>LIMITED FOUNDER LAUNCH:</b> Get 30 Days Full Access for <b>$0 / ₹0</b> (Regular <s style="opacity: 0.8;">$29/mo</s>) — No Credit Card Required!</span>
+</div>
+
+<div style="text-align: center; padding: 20px 0 45px;">
   <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--upwork-tint); border: 1px solid var(--upwork-tint-border); color: var(--upwork-tint-text); font-family: var(--font-mono); font-size: 12px; padding: 6px 16px; border-radius: 20px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 24px;">
     ⚡ Account-Safe · No Auto-Apply · AI Scope & Budget Estimator
   </div>
@@ -17,7 +22,7 @@
   </p>
 
   <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
-    <a class="btn" href="{{ route('register') }}" style="padding: 14px 32px; font-size: 16px;">Start 30-Day Free Trial ↗</a>
+    <a class="btn" href="{{ route('register') }}" style="padding: 14px 32px; font-size: 16px;">Claim Free $0 Founder Pass ↗</a>
     <a class="btn btn-ghost" href="#features" style="padding: 14px 28px; font-size: 16px;">Explore Features</a>
   </div>
   <p style="font-size: 13px; color: var(--text-dim); margin-top: 14px;">No credit card required · Works with UpHunt, RSS & Webhooks</p>
@@ -99,20 +104,23 @@
   </div>
 </div>
 
-<!-- Pricing Section -->
+<!-- Promotional Pricing Section -->
 <div class="glass-panel" style="max-width: 480px; margin: 0 auto 60px; text-align: center; border-color: var(--upwork-green); border-width: 2px;">
-  <div style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--upwork-green); font-weight: 800; margin-bottom: 6px;">Early Access Founder Pricing</div>
-  <div style="font-size: 46px; font-weight: 800; color: var(--text-dark);">₹0</div>
-  <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Free for 30 Days · No Credit Card Required</div>
+  <div style="font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; color: var(--upwork-green); font-weight: 800; margin-bottom: 6px;">🎉 Promotional Launch Offer</div>
+  <div style="font-size: 20px; text-decoration: line-through; color: var(--text-dim); margin-bottom: 2px;">$29 / month</div>
+  <div style="font-size: 48px; font-weight: 800; color: var(--upwork-green);">$0 <span style="font-size: 18px; color: var(--text-muted); font-weight: 500;">/ 30 Days</span></div>
+  <div style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px;">100% Free Founder Pass · No Credit Card Required</div>
 
   <ul style="text-align: left; list-style: none; margin-bottom: 24px; font-size: 14.5px; color: var(--text-dark);">
     <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">✓ Up to 100 AI Proposals / month</li>
     <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">✓ AI Scope & Budget Estimator</li>
+    <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">✓ 3 Opener Hook Options Generator</li>
+    <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">✓ Upwork Deposit Milestone Breakdown</li>
     <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">✓ Payment Verification Filtering</li>
     <li style="padding: 8px 0; border-bottom: 1px solid var(--border);">✓ Telegram Alerts & Unread Bell Dropdown</li>
     <li style="padding: 8px 0;">✓ Works with UpHunt, Vibeworker & Webhooks</li>
   </ul>
 
-  <a class="btn" href="{{ route('register') }}" style="width: 100%; padding: 14px; font-size: 16px;">Start 30-Day Free Trial ↗</a>
+  <a class="btn" href="{{ route('register') }}" style="width: 100%; padding: 14px; font-size: 16px;">Claim Free $0 Founder Pass ↗</a>
 </div>
 @endsection
