@@ -236,4 +236,10 @@ class DashboardController extends Controller
             ->with('status', 'Cover letter generated!')
             ->with('ok', 'Cover letter generated!');
     }
+
+    public function completeTour(Request $request)
+    {
+        $request->user()->update(['tour_seen_at' => now()]);
+        return response()->json(['success' => true]);
+    }
 }

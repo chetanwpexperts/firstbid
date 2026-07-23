@@ -58,6 +58,7 @@
 
   @include('partials.footer')
   @include('partials.feedback-modal')
+  @include('partials.onboarding-tour-modal')
 
   <script src="{{ asset('js/app.js') }}"></script>
 </body>

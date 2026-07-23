@@ -26,6 +26,7 @@
       <a class="nav-link {{ request()->routeIs('admin.feedback') ? 'active' : '' }}" href="{{ route('admin.feedback') }}">Feedback</a>
       @endif
 
+      <button type="button" class="btn btn-ghost btn-sm" onclick="openTourModal()" style="font-size: 13px; padding: 5px 11px;">💡 Tour</button>
       <button type="button" class="btn btn-ghost btn-sm" onclick="openFeedbackModal()" style="font-size: 13px; padding: 5px 11px;">💬 Feedback</button>
 
       <div class="notif-bell" id="notifBell" style="position: relative;">
