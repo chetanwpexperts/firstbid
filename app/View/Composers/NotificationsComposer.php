@@ -26,7 +26,7 @@ class NotificationsComposer
         // A user who's never had last_seen_jobs_at set (existing users
         // right after this shipped, or a brand new signup) sees unseen
         // jobs from the last 7 days rather than their entire history.
-        $since = $user->last_seen_jobs_at ?? now()->subDays(7);
+        $since = $user->last_seen_jobs_at ?? now()->subHours(24);
 
         // Fresh builder per call, same reasoning as DashboardController —
         // upworkJobs() returns a new query every time it's invoked.
