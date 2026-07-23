@@ -41,15 +41,21 @@ class DashboardController extends Controller
 
         $jobs = $windowed()
             ->latest()
-            ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
+            ->when($request->query('status'), function ($q, $s) {
+                if ($s === 'applied') {
+                    return $q->where(fn($sub) => $sub->where('status', 'applied')->orWhereNotNull('applied_at'));
+                }
+                return $q->where('status', $s);
+            })
             ->paginate(15);
 
         $notified = $windowed()->where('status', 'notified')->count();
+        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->where('status', 'applied')->orWhereNotNull('applied_at'))->count();
 
         $stats = [
             'total'    => $windowed()->count(),
             'letters'  => $notified,
-            'notified' => $notified,
+            'applied'  => $appliedCount,
             'skipped'  => $windowed()->where('status', 'skipped')->count(),
             'quota'    => max(0, $user->letters_quota - $user->letters_used),
         ];
@@ -73,6 +79,40 @@ class DashboardController extends Controller
         $view = View::exists('dashboard.show') ? 'dashboard.show' : 'job';
 
         return view($view, compact('job'));
+    }
+
+    public function toggleApplied(Request $request, string|int $id)
+    {
+        $realId = HashId::decode($id);
+        if (!$realId) {
+            return response()->json(['error' => 'Invalid job ID'], 404);
+        }
+
+        $job = $request->user()->upworkJobs()->findOrFail($realId);
+
+        if ($job->is_applied) {
+            $job->update([
+                'status'     => $job->cover_letter ? 'generated' : 'ready_to_generate',
+                'applied_at' => null,
+            ]);
+            $isApplied = false;
+        } else {
+            $job->update([
+                'status'     => 'applied',
+                'applied_at' => now(),
+            ]);
+            $isApplied = true;
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success'      => true,
+                'is_applied'   => $isApplied,
+                'status_label' => $job->status_label,
+            ]);
+        }
+
+        return back()->with('status', $isApplied ? 'Marked as applied!' : 'Unmarked applied status');
     }
 
     public function generate(Request $request, string|int $id, ProposalAI $ai, TelegramNotifier $telegram)

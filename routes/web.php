@@ -41,6 +41,7 @@ Route::middleware(['auth', EnsureUserIsApproved::class])->group(function () {
     Route::get('/dashboard/page/{page}', [DashboardController::class, 'index'])->name('dashboard.page');
     Route::get('/jobs/{id}', [DashboardController::class, 'show'])->name('jobs.show');
     Route::post('/jobs/{id}/generate', [DashboardController::class, 'generate'])->name('jobs.generate');
+    Route::post('/jobs/{id}/toggle-applied', [DashboardController::class, 'toggleApplied'])->name('jobs.toggleApplied');
 
     // Settings
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings');

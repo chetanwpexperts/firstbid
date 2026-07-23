@@ -18,6 +18,7 @@ class UpworkJob extends Model
         'opener_hooks'        => 'array',
         'milestones'          => 'array',
         'matched_portfolio'   => 'array',
+        'applied_at'          => 'datetime',
     ];
 
     public function user()
@@ -25,8 +26,16 @@ class UpworkJob extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getIsAppliedAttribute(): bool
+    {
+        return $this->status === 'applied' || $this->applied_at !== null;
+    }
+
     public function getStatusLabelAttribute(): string
     {
+        if ($this->is_applied) {
+            return 'applied';
+        }
         return match ($this->status) {
             'ready_to_generate' => 'ready',
             default             => $this->status,
