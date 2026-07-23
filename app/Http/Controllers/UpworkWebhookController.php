@@ -74,4 +74,38 @@ class UpworkWebhookController extends Controller
 
         return response()->json(['ok' => true, 'id' => $job->id]);
     }
+
+    /**
+     * Endpoint for Chrome Extension to verify applied status from Upwork: /api/jobs/sync-applied
+     */
+    public function syncApplied(Request $request)
+    {
+        $token = $request->header('X-Webhook-Token') ?? $request->input('token');
+        $user = User::where('webhook_token', $token)->first();
+
+        if (! $user) {
+            return response()->json(['error' => 'Unauthorized token'], 401);
+        }
+
+        $ciphertext = $request->input('ciphertext');
+        $jobUrl = $request->input('job_url');
+
+        $job = UpworkJob::where('user_id', $user->id)
+            ->where(function ($q) use ($ciphertext, $jobUrl) {
+                if ($ciphertext) $q->where('ciphertext', $ciphertext);
+                if ($jobUrl) $q->orWhere('job_url', $jobUrl);
+            })
+            ->first();
+
+        if ($job) {
+            $job->update([
+                'status'     => 'applied',
+                'applied_at' => now(),
+            ]);
+
+            return response()->json(['success' => true, 'id' => $job->id, 'status' => 'applied']);
+        }
+
+        return response()->json(['error' => 'Job not found'], 404);
+    }
 }
