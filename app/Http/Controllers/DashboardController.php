@@ -16,22 +16,13 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
-        $window = $request->query('window', '24h');
-        if (! in_array($window, self::WINDOWS, true)) {
-            $window = '24h';
-        }
-
-        $windowStart = match ($window) {
-            '24h'   => now()->subHours(24),
-            '3d'    => now()->subDays(3),
-            '7d'    => now()->subDays(7),
-            'all'   => null,
-        };
+        $window = '24h';
+        $windowStart = now()->subHours(24);
 
         // Fresh builder per call — a relationship method like upworkJobs()
         // always returns a new query, so this is safe to invoke repeatedly.
         $windowed = fn () => $user->upworkJobs()
-            ->when($windowStart, fn ($q) => $q->where('created_at', '>=', $windowStart))
+            ->where('created_at', '>=', $windowStart)
             ->where('payment_verified', true);
 
         $jobs = $windowed()

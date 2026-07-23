@@ -7,22 +7,14 @@
   <div>
     <h1 style="font-size: 24px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px;">Job Inbox</h1>
     <p style="color: var(--text-muted); font-size: 14px;">
-      @if($window === '24h') Showing real-time jobs from the last 24 hours.
-      @elseif($window === '3d') Showing jobs from the last 3 days.
-      @elseif($window === '7d') Showing jobs from the last 7 days.
-      @else Showing all captured jobs.
-      @endif
+      Showing real-time verified jobs from the last 24 hours.
     </p>
   </div>
 
-  <!-- Time Window Filters -->
-  <div style="display: flex; gap: 6px; background: #ffffff; padding: 4px; border-radius: 8px; border: 1px solid var(--border);">
-    @foreach(['24h' => '24h', '3d' => '3 Days', '7d' => '7 Days', 'all' => 'All'] as $w => $label)
-      <a href="{{ route('dashboard', array_filter(['window' => $w, 'status' => request('status')])) }}"
-         style="font-family: var(--font-mono); font-size: 12.5px; padding: 6px 14px; border-radius: 6px; text-decoration: none; transition: all 0.2s ease; {{ $window === $w ? 'background: var(--upwork-green); color: #ffffff; font-weight: 700;' : 'color: var(--text-muted);' }}">
-        {{ $label }}
-      </a>
-    @endforeach
+  <!-- Live 24h Feed Badge -->
+  <div style="display: flex; align-items: center; gap: 8px; background: var(--upwork-tint); border: 1px solid var(--upwork-tint-border); padding: 6px 14px; border-radius: 20px; box-shadow: 0 2px 8px rgba(20, 168, 0, 0.08);">
+    <div class="status-pulse-dot"></div>
+    <span style="font-family: var(--font-mono); font-size: 12.5px; font-weight: 800; color: var(--upwork-tint-text); text-transform: uppercase;">Live 24h Feed</span>
   </div>
 </div>
 
