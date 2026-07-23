@@ -30,7 +30,7 @@ class NotificationsComposer
 
         // Fresh builder per call, same reasoning as DashboardController —
         // upworkJobs() returns a new query every time it's invoked.
-        $unseen = fn () => $user->upworkJobs()->where('created_at', '>', $since);
+        $unseen = fn () => $user->upworkJobs()->where('created_at', '>', $since)->where('payment_verified', true);
 
         $view->with([
             'unseenJobsCount' => $unseen()->count(),

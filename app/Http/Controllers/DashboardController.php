@@ -31,7 +31,8 @@ class DashboardController extends Controller
         // Fresh builder per call — a relationship method like upworkJobs()
         // always returns a new query, so this is safe to invoke repeatedly.
         $windowed = fn () => $user->upworkJobs()
-            ->when($windowStart, fn ($q) => $q->where('created_at', '>=', $windowStart));
+            ->when($windowStart, fn ($q) => $q->where('created_at', '>=', $windowStart))
+            ->where('payment_verified', true);
 
         $jobs = $windowed()
             ->latest()
