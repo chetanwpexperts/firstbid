@@ -34,14 +34,14 @@
     <div class="val">{{ $stats['total'] }}</div>
     <div class="lbl">Jobs Received</div>
   </div>
-  <div class="stat-card">
-    <div class="val" style="color: var(--upwork-green);">{{ $stats['letters'] }}</div>
-    <div class="lbl">Proposals Written</div>
-  </div>
   <a href="{{ request('status') === 'applied' ? route('dashboard') : route('dashboard', ['status' => 'applied']) }}" class="stat-card" style="text-decoration: none; cursor: pointer; border-color: {{ request('status') === 'applied' ? 'var(--upwork-green)' : 'var(--border)' }}; background: {{ request('status') === 'applied' ? 'var(--upwork-tint)' : '#ffffff' }}; transition: all 0.2s ease;">
     <div class="val" style="color: var(--upwork-dark); font-weight: 800;">{{ $stats['applied'] }}</div>
-    <div class="lbl" style="color: var(--upwork-tint-text); font-weight: 700;">Applied History ✅</div>
+    <div class="lbl" style="color: var(--upwork-tint-text); font-weight: 700;">Applied Proposals ✅</div>
   </a>
+  <div class="stat-card">
+    <div class="val" style="color: var(--amber);">{{ $stats['skipped'] }}</div>
+    <div class="lbl">Filtered Out</div>
+  </div>
   <div class="stat-card">
     <div class="val">{{ $stats['quota'] }}</div>
     <div class="lbl">Letters Left</div>
@@ -77,7 +77,7 @@
         ⭐ Client Score: {{ $job->client_score ?? '?' }} ({{ $job->client_hires ?? '?' }} hires)
         @if(!$job->payment_verified) · <span style="color: var(--red); font-weight: 600;">🚩 Payment Not Verified</span> @else · <span style="color: var(--upwork-tint-text); font-weight: 600;">✅ Payment Verified</span> @endif
         @if($job->bid_suggestion) · <span style="color: var(--amber); font-weight: 600;">💰 {{ $job->bid_suggestion }}</span> @endif
-        @if($job->applied_at) · <span style="color: var(--upwork-tint-text); font-weight: 700;">🚀 Applied {{ $job->applied_at->diffForHumans() }}</span> @endif
+        @if($job->is_applied) · <span style="color: var(--upwork-tint-text); font-weight: 700;">🚀 Applied {{ $job->applied_at ? $job->applied_at->diffForHumans() : 'Proposal Ready' }}</span> @endif
       </div>
 
       @if($job->estimated_budget || $job->estimated_duration)
@@ -121,21 +121,6 @@
           <div style="white-space: pre-wrap; background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 18px; font-size: 14px; line-height: 1.65; color: var(--text-dark);" id="letter-{{ $job->id }}">{{ $job->cover_letter }}</div>
           <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
             <button class="btn btn-ghost btn-sm" onclick="copyVal('letter-{{ $job->id }}', this)">Copy Proposal</button>
-            
-            <!-- Applied Tracker Button -->
-            <form method="POST" action="{{ route('jobs.toggleApplied', $job) }}" style="margin: 0;">
-              @csrf
-              @if($job->is_applied)
-                <button class="btn btn-ghost btn-sm" type="submit" style="background: var(--upwork-tint); color: var(--upwork-tint-text); border-color: var(--upwork-tint-border); font-weight: 700;">
-                  Applied ✅ (Undo)
-                </button>
-              @else
-                <button class="btn btn-ghost btn-sm" type="submit" style="border-color: var(--upwork-green); color: var(--upwork-dark); font-weight: 700;">
-                  Mark as Applied 🚀
-                </button>
-              @endif
-            </form>
-
             <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
             @if($job->job_url)<a class="btn btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>@endif
           </div>
@@ -146,38 +131,11 @@
             @csrf
             <button class="btn btn-sm" type="submit">✨ Generate Proposal & AI Scope</button>
           </form>
-
-          <form method="POST" action="{{ route('jobs.toggleApplied', $job) }}" style="margin: 0;">
-            @csrf
-            @if($job->is_applied)
-              <button class="btn btn-ghost btn-sm" type="submit" style="background: var(--upwork-tint); color: var(--upwork-tint-text); border-color: var(--upwork-tint-border); font-weight: 700;">
-                Applied ✅ (Undo)
-              </button>
-            @else
-              <button class="btn btn-ghost btn-sm" type="submit" style="border-color: var(--upwork-green); color: var(--upwork-dark); font-weight: 700;">
-                Mark as Applied 🚀
-              </button>
-            @endif
-          </form>
-
           <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
           @if($job->job_url)<a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>@endif
         </div>
       @elseif($job->job_url)
         <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <form method="POST" action="{{ route('jobs.toggleApplied', $job) }}" style="margin: 0;">
-            @csrf
-            @if($job->is_applied)
-              <button class="btn btn-ghost btn-sm" type="submit" style="background: var(--upwork-tint); color: var(--upwork-tint-text); border-color: var(--upwork-tint-border); font-weight: 700;">
-                Applied ✅ (Undo)
-              </button>
-            @else
-              <button class="btn btn-ghost btn-sm" type="submit" style="border-color: var(--upwork-green); color: var(--upwork-dark); font-weight: 700;">
-                Mark as Applied 🚀
-              </button>
-            @endif
-          </form>
-
           <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
           <a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>
         </div>
@@ -207,7 +165,7 @@
 @empty
   <div class="glass-panel" style="text-align: center; color: var(--text-muted); padding: 50px 20px;">
     @if(request('status') === 'applied')
-      No applied jobs found in history yet. Click <strong>"Mark as Applied 🚀"</strong> on any job proposal to track your submissions!
+      No applied proposals found in history yet. Any job for which a proposal letter is generated automatically appears here!
     @else
       No jobs captured in the last 24 hours. Once your webhook URL is set in UpHunt or RSS, matching jobs will appear here automatically.
     @endif

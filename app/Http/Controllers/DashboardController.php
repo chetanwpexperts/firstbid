@@ -43,14 +43,14 @@ class DashboardController extends Controller
             ->latest()
             ->when($request->query('status'), function ($q, $s) {
                 if ($s === 'applied') {
-                    return $q->where(fn($sub) => $sub->where('status', 'applied')->orWhereNotNull('applied_at'));
+                    return $q->where(fn($sub) => $sub->whereNotNull('cover_letter')->orWhere('status', 'applied')->orWhereNotNull('applied_at'));
                 }
                 return $q->where('status', $s);
             })
             ->paginate(15);
 
-        $notified = $windowed()->where('status', 'notified')->count();
-        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->where('status', 'applied')->orWhereNotNull('applied_at'))->count();
+        $notified = $windowed()->where(fn($q) => $q->whereNotNull('cover_letter')->orWhere('status', 'notified'))->count();
+        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->whereNotNull('cover_letter')->orWhere('status', 'applied')->orWhereNotNull('applied_at'))->count();
 
         $stats = [
             'total'    => $windowed()->count(),
@@ -159,7 +159,8 @@ class DashboardController extends Controller
                 'estimated_duration' => $result['estimated_duration'] ?? null,
                 'budget_reasoning'  => $result['budget_reasoning'] ?? null,
                 'task_breakdown'     => $result['task_breakdown'] ?? null,
-                'status'             => 'generated',
+                'status'             => 'applied',
+                'applied_at'         => now(),
             ]);
 
             $user->increment('letters_used');
@@ -171,14 +172,12 @@ class DashboardController extends Controller
 
         try {
             $telegram->sendJobAlert($job->fresh('user'), $user->telegram_chat_id);
-            $job->update(['status' => 'notified']);
         } catch (\Throwable $e) {
-            $job->update(['status' => 'failed', 'skip_reason' => 'Telegram: ' . mb_substr($e->getMessage(), 0, 200)]);
             Log::error("Telegram failed for job {$job->id}: " . $e->getMessage());
         }
 
         return redirect()->route('jobs.show', $job)
-            ->with('status', 'Cover letter generated!')
-            ->with('ok', 'Cover letter generated!');
+            ->with('status', 'Cover letter generated & automatically marked as applied!')
+            ->with('ok', 'Cover letter generated & automatically marked as applied!');
     }
 }

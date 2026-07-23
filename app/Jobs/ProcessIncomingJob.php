@@ -105,7 +105,8 @@ class ProcessIncomingJob implements ShouldQueue
                 'estimated_duration' => $result['estimated_duration'] ?? null,
                 'budget_reasoning'  => $result['budget_reasoning'] ?? null,
                 'task_breakdown'     => $result['task_breakdown'] ?? null,
-                'status'             => 'generated',
+                'status'             => 'applied',
+                'applied_at'         => now(),
             ]);
 
             $user->increment('letters_used');
