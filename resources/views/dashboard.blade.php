@@ -122,24 +122,9 @@
           <h2 style="font-size: 12.5px; font-family: var(--font-mono); text-transform: uppercase; color: var(--upwork-dark); margin-bottom: 8px; font-weight: 700;">Generated Cover Letter</h2>
           <div style="white-space: pre-wrap; background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 18px; font-size: 14px; line-height: 1.65; color: var(--text-dark);" id="letter-{{ $job->id }}">{{ $job->cover_letter }}</div>
           <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-            <button class="btn btn-ghost btn-sm" onclick="copyVal('letter-{{ $job->id }}', this)">Copy Proposal</button>
-
-            <!-- 1-Click Applied Status Toggle -->
-            <form method="POST" action="{{ route('jobs.toggleApplied', $job) }}" style="margin: 0;">
-              @csrf
-              @if($job->is_applied)
-                <button class="btn btn-ghost btn-sm" type="submit" style="background: var(--upwork-tint); color: var(--upwork-tint-text); border-color: var(--upwork-tint-border); font-weight: 700;">
-                  Applied ✅ (Undo)
-                </button>
-              @else
-                <button class="btn btn-ghost btn-sm" type="submit" style="border-color: var(--upwork-green); color: var(--upwork-dark); font-weight: 700;">
-                  Mark as Applied 🚀
-                </button>
-              @endif
-            </form>
-
+            <button class="btn btn-ghost btn-sm" onclick="copyVal('letter-{{ $job->id }}', this, '{{ route('jobs.toggleApplied', $job) }}')">Copy Proposal</button>
             <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
-            @if($job->job_url)<a class="btn btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>@endif
+            @if($job->job_url)<a class="btn btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener" onclick="autoMarkApplied('{{ route('jobs.toggleApplied', $job) }}')">Open Job on Upwork ↗</a>@endif
           </div>
         </div>
       @elseif($job->status === 'ready_to_generate')
@@ -149,39 +134,13 @@
             <button class="btn btn-sm" type="submit">✨ Generate Proposal & AI Scope</button>
           </form>
 
-          <form method="POST" action="{{ route('jobs.toggleApplied', $job) }}" style="margin: 0;">
-            @csrf
-            @if($job->is_applied)
-              <button class="btn btn-ghost btn-sm" type="submit" style="background: var(--upwork-tint); color: var(--upwork-tint-text); border-color: var(--upwork-tint-border); font-weight: 700;">
-                Applied ✅ (Undo)
-              </button>
-            @else
-              <button class="btn btn-ghost btn-sm" type="submit" style="border-color: var(--upwork-green); color: var(--upwork-dark); font-weight: 700;">
-                Mark as Applied 🚀
-              </button>
-            @endif
-          </form>
-
           <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
-          @if($job->job_url)<a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>@endif
+          @if($job->job_url)<a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener" onclick="autoMarkApplied('{{ route('jobs.toggleApplied', $job) }}')">Open Job on Upwork ↗</a>@endif
         </div>
       @elseif($job->job_url)
         <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <form method="POST" action="{{ route('jobs.toggleApplied', $job) }}" style="margin: 0;">
-            @csrf
-            @if($job->is_applied)
-              <button class="btn btn-ghost btn-sm" type="submit" style="background: var(--upwork-tint); color: var(--upwork-tint-text); border-color: var(--upwork-tint-border); font-weight: 700;">
-                Applied ✅ (Undo)
-              </button>
-            @else
-              <button class="btn btn-ghost btn-sm" type="submit" style="border-color: var(--upwork-green); color: var(--upwork-dark); font-weight: 700;">
-                Mark as Applied 🚀
-              </button>
-            @endif
-          </form>
-
           <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
-          <a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>
+          <a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener" onclick="autoMarkApplied('{{ route('jobs.toggleApplied', $job) }}')">Open Job on Upwork ↗</a>
         </div>
       @endif
 
@@ -197,7 +156,7 @@
             <div class="screening-card">
               <div class="screening-header">
                 <div class="screening-question">❓ {{ $q['question'] ?? 'Question' }}</div>
-                <button class="btn btn-ghost btn-sm" onclick="copyVal('qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}', this)" style="padding: 4px 10px; font-size: 12px;">Copy Answer</button>
+                <button class="btn btn-ghost btn-sm" onclick="copyVal('qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}', this, '{{ route('jobs.toggleApplied', $job) }}')" style="padding: 4px 10px; font-size: 12px;">Copy Answer</button>
               </div>
               <div class="screening-answer" id="qa-{{ $job->id }}-{{ $a['position'] ?? 0 }}">{{ $a['answer'] ?? '' }}</div>
             </div>
@@ -209,7 +168,7 @@
 @empty
   <div class="glass-panel" style="text-align: center; color: var(--text-muted); padding: 50px 20px;">
     @if(!empty($isAppliedView))
-      No applied jobs found in history yet. Click <strong>"Mark as Applied 🚀"</strong> on any job proposal when you submit it!
+      No applied jobs found in history yet. Whenever a proposal is generated, copied, or opened on Upwork, it will automatically appear here!
     @else
       No jobs captured in the last 24 hours. Once your webhook URL is set in UpHunt or RSS, matching jobs will appear here automatically.
     @endif

@@ -50,7 +50,7 @@ class DashboardController extends Controller
             ->paginate(15);
 
         $notified = $windowed()->where('status', 'notified')->count();
-        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->where('status', 'applied')->orWhereNotNull('applied_at'))->count();
+        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->whereNotNull('cover_letter')->orWhere('status', 'applied')->orWhereNotNull('applied_at'))->count();
 
         $stats = [
             'total'    => $windowed()->count(),
@@ -87,10 +87,11 @@ class DashboardController extends Controller
             $request->merge(['page' => $page]);
         }
 
-        $appliedQuery = fn() => $user->upworkJobs()->where(fn($q) => $q->where('status', 'applied')->orWhereNotNull('applied_at'));
+        // Applied jobs history query (all jobs where a proposal letter exists or status is applied)
+        $appliedQuery = fn() => $user->upworkJobs()
+            ->where(fn($q) => $q->whereNotNull('cover_letter')->orWhere('status', 'applied')->orWhereNotNull('applied_at'));
 
         $jobs = $appliedQuery()
-            ->latest('applied_at')
             ->latest('updated_at')
             ->paginate(15);
 
@@ -130,6 +131,31 @@ class DashboardController extends Controller
         $view = View::exists('dashboard.show') ? 'dashboard.show' : 'job';
 
         return view($view, compact('job'));
+    }
+
+    public function markApplied(Request $request, string|int $id)
+    {
+        $realId = HashId::decode($id);
+        if (!$realId) {
+            return response()->json(['error' => 'Invalid job ID'], 404);
+        }
+
+        $job = $request->user()->upworkJobs()->findOrFail($realId);
+
+        $job->update([
+            'status'     => 'applied',
+            'applied_at' => now(),
+        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success'      => true,
+                'is_applied'   => true,
+                'status_label' => $job->status_label,
+            ]);
+        }
+
+        return back()->with('status', 'Marked as applied!');
     }
 
     public function toggleApplied(Request $request, string|int $id)
@@ -210,7 +236,8 @@ class DashboardController extends Controller
                 'estimated_duration' => $result['estimated_duration'] ?? null,
                 'budget_reasoning'  => $result['budget_reasoning'] ?? null,
                 'task_breakdown'     => $result['task_breakdown'] ?? null,
-                'status'             => 'generated',
+                'status'             => 'applied',
+                'applied_at'         => now(),
             ]);
 
             $user->increment('letters_used');
@@ -222,14 +249,12 @@ class DashboardController extends Controller
 
         try {
             $telegram->sendJobAlert($job->fresh('user'), $user->telegram_chat_id);
-            $job->update(['status' => 'notified']);
         } catch (\Throwable $e) {
-            $job->update(['status' => 'failed', 'skip_reason' => 'Telegram: ' . mb_substr($e->getMessage(), 0, 200)]);
             Log::error("Telegram failed for job {$job->id}: " . $e->getMessage());
         }
 
         return redirect()->route('jobs.show', $job)
-            ->with('status', 'Cover letter generated!')
-            ->with('ok', 'Cover letter generated!');
+            ->with('status', 'Cover letter generated & tracked as applied!')
+            ->with('ok', 'Cover letter generated & tracked as applied!');
     }
 }

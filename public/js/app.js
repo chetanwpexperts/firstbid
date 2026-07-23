@@ -19,18 +19,34 @@ function finishLoader() {
   }, 200);
 }
 
-function copyVal(id, btn) {
+function autoMarkApplied(url) {
+  if (!url) return;
+  const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'X-CSRF-TOKEN': token,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).catch(() => {});
+}
+
+function copyVal(id, btn, markUrl) {
   const el = document.getElementById(id);
   if (!el) return;
   navigator.clipboard.writeText(el.value || el.innerText).then(() => {
     const old = btn.innerText;
     btn.innerText = 'Copied ✓';
     setTimeout(() => btn.innerText = old, 1500);
+    if (markUrl) {
+      autoMarkApplied(markUrl);
+    }
   });
 }
 
-function copyText(id, btn) {
-  copyVal(id, btn);
+function copyText(id, btn, markUrl) {
+  copyVal(id, btn, markUrl);
 }
 
 function switchTab(tabId, btn) {
