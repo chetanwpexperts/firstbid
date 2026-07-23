@@ -16,6 +16,14 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        if ($request->has('window') || $request->query('page') == 1) {
+            $params = $request->except(['window']);
+            if (isset($params['page']) && (int)$params['page'] === 1) {
+                unset($params['page']);
+            }
+            return redirect()->route('dashboard', $params);
+        }
+
         $window = '24h';
         $windowStart = now()->subHours(24);
 
@@ -29,7 +37,7 @@ class DashboardController extends Controller
             ->latest()
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
             ->paginate(15)
-            ->withQueryString();
+            ->appends($request->only('status'));
 
         $notified = $windowed()->where('status', 'notified')->count();
 
