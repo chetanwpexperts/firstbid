@@ -15,6 +15,11 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        // Redirect legacy ?status=applied query string to clean /applied route
+        if ($request->query('status') === 'applied') {
+            return redirect()->route('jobs.applied');
+        }
+
         // Redirect query string ?page=X or ?window=X to clean RESTful path
         if ($request->has('window') || $request->has('page')) {
             $queryPage = (int) $request->query('page', 1);
@@ -41,16 +46,11 @@ class DashboardController extends Controller
 
         $jobs = $windowed()
             ->latest()
-            ->when($request->query('status'), function ($q, $s) {
-                if ($s === 'applied') {
-                    return $q->where(fn($sub) => $sub->whereNotNull('cover_letter')->orWhere('status', 'applied')->orWhereNotNull('applied_at'));
-                }
-                return $q->where('status', $s);
-            })
+            ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
             ->paginate(15);
 
-        $notified = $windowed()->where(fn($q) => $q->whereNotNull('cover_letter')->orWhere('status', 'notified'))->count();
-        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->whereNotNull('cover_letter')->orWhere('status', 'applied')->orWhereNotNull('applied_at'))->count();
+        $notified = $windowed()->where('status', 'notified')->count();
+        $appliedCount = $user->upworkJobs()->where(fn($q) => $q->where('status', 'applied')->orWhereNotNull('applied_at'))->count();
 
         $stats = [
             'total'    => $windowed()->count(),
@@ -61,10 +61,61 @@ class DashboardController extends Controller
         ];
 
         $user->update(['last_seen_jobs_at' => now()]);
+        $isAppliedView = false;
 
         $view = View::exists('dashboard') ? 'dashboard' : 'dashboard.index';
 
-        return view($view, compact('jobs', 'stats', 'user', 'window'));
+        return view($view, compact('jobs', 'stats', 'user', 'window', 'isAppliedView'));
+    }
+
+    public function applied(Request $request, ?int $page = null)
+    {
+        $user = $request->user();
+
+        if ($request->has('page')) {
+            $queryPage = (int) $request->query('page', 1);
+            if ($queryPage > 1) {
+                return redirect()->route('jobs.applied.page', ['page' => $queryPage]);
+            }
+            return redirect()->route('jobs.applied');
+        }
+
+        if ($page !== null) {
+            if ($page <= 1) {
+                return redirect()->route('jobs.applied');
+            }
+            $request->merge(['page' => $page]);
+        }
+
+        $appliedQuery = fn() => $user->upworkJobs()->where(fn($q) => $q->where('status', 'applied')->orWhereNotNull('applied_at'));
+
+        $jobs = $appliedQuery()
+            ->latest('applied_at')
+            ->latest('updated_at')
+            ->paginate(15);
+
+        $windowStart = now()->subHours(24);
+        $windowed = fn () => $user->upworkJobs()
+            ->where('created_at', '>=', $windowStart)
+            ->where('payment_verified', true);
+
+        $notified = $windowed()->where('status', 'notified')->count();
+        $appliedTotal = $appliedQuery()->count();
+
+        $stats = [
+            'total'    => $windowed()->count(),
+            'letters'  => $notified,
+            'applied'  => $appliedTotal,
+            'skipped'  => $windowed()->where('status', 'skipped')->count(),
+            'quota'    => max(0, $user->letters_quota - $user->letters_used),
+        ];
+
+        $window = 'all';
+        $isAppliedView = true;
+
+        $view = View::exists('dashboard') ? 'dashboard' : 'dashboard.index';
+
+        return view($view, compact('jobs', 'stats', 'user', 'window', 'isAppliedView'));
     }
 
     public function show(Request $request, string|int $id)
@@ -159,8 +210,7 @@ class DashboardController extends Controller
                 'estimated_duration' => $result['estimated_duration'] ?? null,
                 'budget_reasoning'  => $result['budget_reasoning'] ?? null,
                 'task_breakdown'     => $result['task_breakdown'] ?? null,
-                'status'             => 'applied',
-                'applied_at'         => now(),
+                'status'             => 'generated',
             ]);
 
             $user->increment('letters_used');
@@ -172,12 +222,14 @@ class DashboardController extends Controller
 
         try {
             $telegram->sendJobAlert($job->fresh('user'), $user->telegram_chat_id);
+            $job->update(['status' => 'notified']);
         } catch (\Throwable $e) {
+            $job->update(['status' => 'failed', 'skip_reason' => 'Telegram: ' . mb_substr($e->getMessage(), 0, 200)]);
             Log::error("Telegram failed for job {$job->id}: " . $e->getMessage());
         }
 
         return redirect()->route('jobs.show', $job)
-            ->with('status', 'Cover letter generated & automatically marked as applied!')
-            ->with('ok', 'Cover letter generated & automatically marked as applied!');
+            ->with('status', 'Cover letter generated!')
+            ->with('ok', 'Cover letter generated!');
     }
 }

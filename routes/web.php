@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', EnsureUserIsApproved::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/page/{page}', [DashboardController::class, 'index'])->name('dashboard.page');
+    Route::get('/applied', [DashboardController::class, 'applied'])->name('jobs.applied');
+    Route::get('/applied/page/{page}', [DashboardController::class, 'applied'])->name('jobs.applied.page');
     Route::get('/jobs/{id}', [DashboardController::class, 'show'])->name('jobs.show');
     Route::post('/jobs/{id}/generate', [DashboardController::class, 'generate'])->name('jobs.generate');
     Route::post('/jobs/{id}/toggle-applied', [DashboardController::class, 'toggleApplied'])->name('jobs.toggleApplied');

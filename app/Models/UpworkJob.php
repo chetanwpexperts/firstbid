@@ -28,7 +28,7 @@ class UpworkJob extends Model
 
     public function getIsAppliedAttribute(): bool
     {
-        return !empty($this->cover_letter) || $this->status === 'applied' || $this->applied_at !== null;
+        return $this->status === 'applied' || $this->applied_at !== null;
     }
 
     public function getStatusLabelAttribute(): string

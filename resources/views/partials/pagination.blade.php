@@ -6,8 +6,12 @@
         $currentPage = $paginator->currentPage();
         $lastPage = method_exists($paginator, 'lastPage') ? max(1, $paginator->lastPage()) : 1;
         $progressPct = round(($currentPage / $lastPage) * 100);
+        $isAppliedRoute = request()->routeIs('jobs.applied*') || !empty($isAppliedView);
 
-        $prettyUrl = function($page) {
+        $prettyUrl = function($page) use ($isAppliedRoute) {
+            if ($isAppliedRoute) {
+                return $page <= 1 ? route('jobs.applied') : route('jobs.applied.page', ['page' => $page]);
+            }
             return $page <= 1 ? route('dashboard') : route('dashboard.page', ['page' => $page]);
         };
       @endphp
