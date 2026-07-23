@@ -14,6 +14,8 @@
 <meta property="twitter:card" content="summary_large_image">
 <meta property="twitter:title" content="@yield('title', 'FirstBidIn — Upwork AI Proposal Generator & Budget Estimator')">
 <meta property="twitter:description" content="Win Upwork jobs in 2 minutes with AI scope breakdowns, subtask effort estimates, and account-safe proposal writing.">
+<link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+<link rel="shortcut icon" href="{{ asset('favicon.svg') }}">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
 @php $gaId = config('services.ga.measurement_id'); @endphp
