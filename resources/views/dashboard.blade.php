@@ -60,14 +60,14 @@
 <div class="job-list">
 @forelse($jobs as $job)
   <details class="glass-panel job-card" style="margin-bottom: 0; padding: 0; overflow: hidden;" {{ !empty($isAppliedView) ? 'open' : '' }}>
-    <summary style="list-style: none; cursor: pointer; padding: 18px 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; user-select: none;">
+    <summary style="list-style: none; cursor: pointer; padding: 16px 20px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; user-select: none;">
       @php $s = $job->uphunt_score; @endphp
-      <span class="badge" style="font-size: 13px; padding: 5px 12px; font-weight: 800; font-family: var(--font-mono); {{ $s >= 8 ? 'background: var(--upwork-tint); color: var(--upwork-tint-text); border: 1px solid var(--upwork-tint-border);' : ($s >= 6 ? 'background: var(--amber-tint); color: var(--amber); border: 1px solid var(--amber-border);' : 'background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border);') }}">
+      <span class="badge" style="font-size: 11px; padding: 4px 10px; font-weight: 700; letter-spacing: 0.03em; {{ $s >= 8 ? 'background: var(--upwork-tint); color: var(--upwork-tint-text); border: 1px solid var(--upwork-tint-border);' : ($s >= 6 ? 'background: var(--amber-tint); color: var(--amber); border: 1px solid var(--amber-border);' : 'background: #f1f5f9; color: var(--text-muted); border: 1px solid var(--border);') }}">
         SCORE {{ $s ?? '–' }}
       </span>
 
-      <span style="font-weight: 700; color: var(--text-dark); flex: 1; min-width: 240px; font-size: 16px;">{{ $job->title }}</span>
-      <span style="font-size: 13px; color: var(--text-muted); font-family: var(--font-mono);">{{ $job->budget_display }} · {{ $job->client_country ?? '?' }} · {{ $job->created_at->diffForHumans() }}</span>
+      <span style="font-weight: 600; color: var(--text-dark); flex: 1; min-width: 240px; font-size: 14.5px; line-height: 1.45; letter-spacing: -0.015em;">{{ $job->title }}</span>
+      <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;"><strong style="color: var(--text-main); font-weight: 600;">{{ $job->budget_display }}</strong> · {{ $job->client_country ?? '?' }} · {{ $job->created_at->diffForHumans() }}</span>
 
       <span class="badge badge-{{ $job->is_applied ? 'applied' : ($job->status === 'ready_to_generate' ? 'pending' : ($job->status === 'notified' || $job->status === 'generated' ? 'notified' : ($job->status === 'failed' ? 'failed' : 'skipped'))) }}">
         {{ $job->is_applied ? 'applied' : $job->status_label }}
