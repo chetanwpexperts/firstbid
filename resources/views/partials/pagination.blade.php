@@ -6,10 +6,9 @@
         $currentPage = $paginator->currentPage();
         $lastPage = method_exists($paginator, 'lastPage') ? max(1, $paginator->lastPage()) : 1;
         $progressPct = round(($currentPage / $lastPage) * 100);
-        $cleanUrl = function($u) {
-            if (!$u) return '#';
-            $u = preg_replace('/([?&])page=1(&|$)/', '$1', $u);
-            return rtrim(preg_replace('/[?&]$/', '', $u), '?');
+
+        $prettyUrl = function($page) {
+            return $page <= 1 ? route('dashboard') : route('dashboard.page', ['page' => $page]);
         };
       @endphp
       <div class="pager-progress-track">
@@ -24,7 +23,7 @@
             <span>Prev</span>
           </span>
         @else
-          <a href="{{ $cleanUrl($paginator->previousPageUrl()) }}" class="pager-btn" rel="prev" title="Previous Page">
+          <a href="{{ $prettyUrl($currentPage - 1) }}" class="pager-btn" rel="prev" title="Previous Page">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             <span>Prev</span>
           </a>
@@ -42,7 +41,7 @@
                 @if ($page == $paginator->currentPage())
                   <span class="pager-num active" aria-current="page">{{ $page }}</span>
                 @else
-                  <a href="{{ $cleanUrl($url) }}" class="pager-num">{{ $page }}</a>
+                  <a href="{{ $prettyUrl($page) }}" class="pager-num">{{ $page }}</a>
                 @endif
               @endforeach
             @endif
@@ -51,7 +50,7 @@
 
         <!-- Next Button -->
         @if ($paginator->hasMorePages())
-          <a href="{{ $cleanUrl($paginator->nextPageUrl()) }}" class="pager-btn" rel="next" title="Next Page">
+          <a href="{{ $prettyUrl($currentPage + 1) }}" class="pager-btn" rel="next" title="Next Page">
             <span>Next</span>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
           </a>

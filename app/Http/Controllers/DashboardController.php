@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\HashId;
 use App\Services\ProposalAI;
 use App\Services\TelegramNotifier;
 use Illuminate\Http\Request;
@@ -10,25 +11,30 @@ use Illuminate\Support\Facades\View;
 
 class DashboardController extends Controller
 {
-    private const WINDOWS = ['24h', '3d', '7d', 'all'];
-
-    public function index(Request $request)
+    public function index(Request $request, ?int $page = null)
     {
         $user = $request->user();
 
-        if ($request->has('window') || $request->query('page') == 1) {
-            $params = $request->except(['window']);
-            if (isset($params['page']) && (int)$params['page'] === 1) {
-                unset($params['page']);
+        // Redirect query string ?page=X or ?window=X to clean RESTful path
+        if ($request->has('window') || $request->has('page')) {
+            $queryPage = (int) $request->query('page', 1);
+            if ($queryPage > 1) {
+                return redirect()->route('dashboard.page', ['page' => $queryPage]);
             }
-            return redirect()->route('dashboard', $params);
+            return redirect()->route('dashboard');
+        }
+
+        if ($page !== null) {
+            if ($page <= 1) {
+                return redirect()->route('dashboard');
+            }
+            $request->merge(['page' => $page]);
         }
 
         $window = '24h';
         $windowStart = now()->subHours(24);
 
-        // Fresh builder per call — a relationship method like upworkJobs()
-        // always returns a new query, so this is safe to invoke repeatedly.
+        // Fresh builder per call — only return payment verified jobs from the last 24 hours
         $windowed = fn () => $user->upworkJobs()
             ->where('created_at', '>=', $windowStart)
             ->where('payment_verified', true);
@@ -36,21 +42,18 @@ class DashboardController extends Controller
         $jobs = $windowed()
             ->latest()
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
-            ->paginate(15)
-            ->appends($request->only('status'));
+            ->paginate(15);
 
         $notified = $windowed()->where('status', 'notified')->count();
 
         $stats = [
             'total'    => $windowed()->count(),
-            'letters'  => $notified,   // key used by dashboard.blade.php
-            'notified' => $notified,   // alias, in case any view uses this name
+            'letters'  => $notified,
+            'notified' => $notified,
             'skipped'  => $windowed()->where('status', 'skipped')->count(),
             'quota'    => max(0, $user->letters_quota - $user->letters_used),
         ];
 
-        // Visiting the dashboard counts as having seen everything up to
-        // now — see App\View\Composers\NotificationsComposer for the bell.
         $user->update(['last_seen_jobs_at' => now()]);
 
         $view = View::exists('dashboard') ? 'dashboard' : 'dashboard.index';
@@ -58,28 +61,32 @@ class DashboardController extends Controller
         return view($view, compact('jobs', 'stats', 'user', 'window'));
     }
 
-    public function show(Request $request, int $id)
+    public function show(Request $request, string|int $id)
     {
-        $job = $request->user()->upworkJobs()->findOrFail($id);
+        $realId = HashId::decode($id);
+        if (!$realId) {
+            abort(404);
+        }
+
+        $job = $request->user()->upworkJobs()->findOrFail($realId);
 
         $view = View::exists('dashboard.show') ? 'dashboard.show' : 'job';
 
         return view($view, compact('job'));
     }
 
-    /**
-     * User-initiated letter generation — the manual counterpart to
-     * ProcessIncomingJob's auto-generate path. Does not re-check the
-     * user's score/payment filters: those only govern what happens
-     * automatically, not what a user is allowed to generate by hand.
-     */
-    public function generate(Request $request, int $id, ProposalAI $ai, TelegramNotifier $telegram)
+    public function generate(Request $request, string|int $id, ProposalAI $ai, TelegramNotifier $telegram)
     {
+        $realId = HashId::decode($id);
+        if (!$realId) {
+            abort(404);
+        }
+
         $user = $request->user();
-        $job = $user->upworkJobs()->findOrFail($id);
+        $job = $user->upworkJobs()->findOrFail($realId);
 
         if ($job->cover_letter) {
-            return redirect()->route('jobs.show', $job->id);
+            return redirect()->route('jobs.show', $job);
         }
 
         if (! $user->canGenerate()) {
@@ -130,7 +137,7 @@ class DashboardController extends Controller
             Log::error("Telegram failed for job {$job->id}: " . $e->getMessage());
         }
 
-        return redirect()->route('jobs.show', $job->id)
+        return redirect()->route('jobs.show', $job)
             ->with('status', 'Cover letter generated!')
             ->with('ok', 'Cover letter generated!');
     }

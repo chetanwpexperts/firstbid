@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\HashId;
 use Illuminate\Database\Eloquent\Model;
 
 class UpworkJob extends Model
@@ -30,5 +31,15 @@ class UpworkJob extends Model
             'ready_to_generate' => 'ready',
             default             => $this->status,
         };
+    }
+
+    public function getHashIdAttribute(): string
+    {
+        return HashId::encode($this->id);
+    }
+
+    public function getRouteKey()
+    {
+        return $this->hash_id;
     }
 }

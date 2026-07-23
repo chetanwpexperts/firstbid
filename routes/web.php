@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
 // Authenticated & Approved app
 Route::middleware(['auth', EnsureUserIsApproved::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/page/{page}', [DashboardController::class, 'index'])->name('dashboard.page');
     Route::get('/jobs/{id}', [DashboardController::class, 'show'])->name('jobs.show');
     Route::post('/jobs/{id}/generate', [DashboardController::class, 'generate'])->name('jobs.generate');
 

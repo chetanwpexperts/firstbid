@@ -110,22 +110,22 @@
           <div style="white-space: pre-wrap; background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 18px; font-size: 14px; line-height: 1.65; color: var(--text-dark);" id="letter-{{ $job->id }}">{{ $job->cover_letter }}</div>
           <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-ghost btn-sm" onclick="copyVal('letter-{{ $job->id }}', this)">Copy Proposal</button>
-            <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job->id) }}">View Full Details</a>
+            <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
             @if($job->job_url)<a class="btn btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>@endif
           </div>
         </div>
       @elseif($job->status === 'ready_to_generate')
         <div style="margin-top: 16px; display: flex; gap: 10px;">
-          <form method="POST" action="{{ route('jobs.generate', $job->id) }}">
+          <form method="POST" action="{{ route('jobs.generate', $job) }}">
             @csrf
             <button class="btn btn-sm" type="submit">✨ Generate Proposal & AI Scope</button>
           </form>
-          <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job->id) }}">View Full Details</a>
+          <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
           @if($job->job_url)<a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>@endif
         </div>
       @elseif($job->job_url)
         <div style="margin-top: 14px; display: flex; gap: 10px;">
-          <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job->id) }}">View Full Details</a>
+          <a class="btn btn-ghost btn-sm" href="{{ route('jobs.show', $job) }}">View Full Details</a>
           <a class="btn btn-ghost btn-sm" href="{{ $job->job_url }}" target="_blank" rel="noopener">Open Job on Upwork ↗</a>
         </div>
       @endif

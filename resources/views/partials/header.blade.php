@@ -38,7 +38,7 @@
         <div class="notif-dropdown" id="notifDropdown" style="display: none; position: absolute; right: 0; top: 38px; width: 320px; background: #ffffff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); z-index: 200; padding: 14px;">
           <div style="font-size: 11.5px; font-family: var(--font-mono); text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; font-weight: 700;">Unread Job Alerts</div>
           @forelse($unseenJobs ?? [] as $job)
-            <a href="{{ route('jobs.show', $job->id) }}" style="display: block; padding: 8px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text-dark);">
+            <a href="{{ route('jobs.show', $job) }}" style="display: block; padding: 8px 0; border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text-dark);">
               <div style="font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $job->title }}</div>
               <div style="font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono);">Score {{ $job->uphunt_score ?? '—' }} · {{ $job->budget_display }}</div>
             </a>
