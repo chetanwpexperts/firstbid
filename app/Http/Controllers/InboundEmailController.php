@@ -28,7 +28,7 @@ class InboundEmailController extends Controller
         $html = (string) $request->input('html', '');
 
         $user = null;
-        if (preg_match('/^u_([a-z0-9]+)@/i', $to, $m)) {
+        if (preg_match('/^u_([^@]+)@/i', $to, $m)) {
             $user = User::where('webhook_token', $m[1])->first();
         }
 
