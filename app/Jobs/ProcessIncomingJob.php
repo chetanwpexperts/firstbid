@@ -36,12 +36,12 @@ class ProcessIncomingJob implements ShouldQueue
             return;
         }
 
-        // ---- Trial check (plan 'pro' bypasses; everyone else needs an active trial) ----
-        if ($user->plan !== 'pro' && ($user->trial_ends_at === null || now()->greaterThan($user->trial_ends_at))) {
-            $job->update(['status' => 'skipped', 'skip_reason' => 'trial expired']);
+        // ---- Trial check (UpHunt real-time webhook requires 'pro' or active trial; email-source jobs always load) ----
+        if ($job->source !== 'email' && $user->plan !== 'pro' && ! $user->onTrial()) {
+            $job->update(['status' => 'skipped', 'skip_reason' => 'UpHunt trial expired — upgrade to Pro for real-time webhooks']);
             try {
                 $telegram->sendText($user->telegram_chat_id,
-                    "⏰ Your FirstBid 30-day trial has ended. Paid plans are coming soon — reply to this or contact us to keep your letters flowing.");
+                    "⏰ Your UpHunt trial has ended. Webhook alerts require Pro — email alerts continue working!");
             } catch (\Throwable) {}
             return;
         }

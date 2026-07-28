@@ -73,6 +73,6 @@ class User extends Authenticatable
 
     public function canGenerate(): bool
     {
-        return $this->plan === 'pro' || $this->onTrial();
+        return $this->plan === 'pro' || $this->onTrial() || ($this->letters_quota > 0 && $this->letters_used < $this->letters_quota);
     }
 }
