@@ -59,29 +59,5 @@ function openFeedbackModal() {
 function closeFeedbackModal() {
   const m = document.getElementById('feedbackModal');
   if (m) m.style.display = 'none';
-  localStorage.setItem('firstbid_last_feedback_prompt', Date.now().toString());
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-  @auth
-    // Check if onboarding tour is currently active
-    const tourModal = document.getElementById('tourModal');
-    const isTourActive = tourModal && tourModal.style.display !== 'none';
-
-    if (!isTourActive) {
-      const lastPrompt = localStorage.getItem('firstbid_last_feedback_prompt');
-      const threeDaysMs = 3 * 24 * 60 * 60 * 1000; // 72-hour interval
-      const now = Date.now();
-
-      if (!lastPrompt || (now - parseInt(lastPrompt, 10)) > threeDaysMs) {
-        setTimeout(function() {
-          // Re-check tour modal state right before popping up
-          if (!tourModal || tourModal.style.display === 'none') {
-            openFeedbackModal();
-          }
-        }, 2000);
-      }
-    }
-  @endauth
-});
 </script>
