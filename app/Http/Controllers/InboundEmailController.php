@@ -27,8 +27,10 @@ class InboundEmailController extends Controller
         $subject = (string) $request->input('subject', '');
         $html = (string) $request->input('html', '');
 
+        Log::info("Inbound email received", ['to' => $to, 'from' => $from, 'subject' => $subject]);
+
         $user = null;
-        if (preg_match('/^u_([^@]+)@/i', $to, $m)) {
+        if (preg_match('/u_([a-zA-Z0-9_-]+)@/i', $to, $m)) {
             $user = User::where('webhook_token', $m[1])->first();
         }
 
@@ -42,6 +44,7 @@ class InboundEmailController extends Controller
         ]);
 
         if (! $user) {
+            Log::warning("Inbound email unknown user for To: {$to}");
             $inbound->update(['status' => 'unknown_user']);
 
             return response()->json(['ok' => true, 'status' => 'unknown_user']);

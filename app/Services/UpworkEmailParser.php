@@ -7,9 +7,7 @@ use DOMNode;
 use DOMXPath;
 
 /**
- * Heuristic HTML parser for Upwork job-alert emails — by design, Upwork doesn't
- * publish a stable email format. Raw emails are stored in inbound_emails so
- * these heuristics can be tuned when Upwork's markup changes.
+ * Robust HTML parser for Upwork job-alert emails.
  */
 class UpworkEmailParser
 {
@@ -27,20 +25,15 @@ class UpworkEmailParser
         $xpath = new DOMXPath($dom);
         $anchors = $xpath->query('//a[@href]');
 
-        // Group every anchor that links to a job by ciphertext (a job can be
-        // linked more than once — e.g. a plain-text title link + an image link).
         $groups = [];
         $order = [];
 
         foreach ($anchors as $anchor) {
             $href = $anchor->getAttribute('href');
-            if (! str_contains($href, 'upwork.com/jobs/')) {
-                continue;
-            }
+            $decoded = urldecode($href);
 
-            $decoded = strtok(urldecode($href), '?'); // strip trailing query junk
-
-            if (! preg_match('#upwork\.com/jobs/([~_%a-zA-Z0-9]+)#', $decoded, $m)) {
+            // Match ciphertext starting with ~01 or ~ followed by alphanumeric/underscore/hyphen
+            if (! preg_match('/(~01[a-zA-Z0-9_-]{12,}|~[a-zA-Z0-9_-]{15,})/', $decoded, $m)) {
                 continue;
             }
 
@@ -57,8 +50,24 @@ class UpworkEmailParser
                 $order[] = $ciphertext;
             }
 
-            if ($groups[$ciphertext]['title'] === null && mb_strlen($text) >= 8) {
+            // Avoid generic button labels like "View Job" or "Apply" as titles
+            if ($groups[$ciphertext]['title'] === null && mb_strlen($text) >= 6 && ! preg_match('/^(view|apply|click|open|read|more|details)$/i', $text)) {
                 $groups[$ciphertext]['title'] = $text;
+            }
+        }
+
+        // Fallback: search raw HTML regex if no DOM links matched ~01...
+        if (empty($order)) {
+            if (preg_match_all('/(~01[a-zA-Z0-9_-]{12,}|~[a-zA-Z0-9_-]{15,})/', $html, $matches)) {
+                foreach (array_unique($matches[1]) as $ciphertext) {
+                    $groups[$ciphertext] = [
+                        'ciphertext' => $ciphertext,
+                        'url'        => 'https://www.upwork.com/jobs/' . $ciphertext,
+                        'title'      => null,
+                        'node'       => null,
+                    ];
+                    $order[] = $ciphertext;
+                }
             }
         }
 
@@ -66,26 +75,31 @@ class UpworkEmailParser
 
         foreach ($order as $ciphertext) {
             $group = $groups[$ciphertext];
+            $blockText = '';
 
-            $block = $this->findContextBlock($group['node']);
-            $blockText = $block ? trim(preg_replace('/\s+/', ' ', $block->textContent ?? '')) : '';
+            if ($group['node']) {
+                $block = $this->findContextBlock($group['node']);
+                $blockText = $block ? trim(preg_replace('/\s+/', ' ', $block->textContent ?? '')) : '';
+            }
 
-            [$budget, $jobType] = $this->extractBudget($blockText);
+            [$budget, $jobType] = $this->extractBudget($blockText !== '' ? $blockText : $html);
+            $description = $blockText !== '' ? mb_substr($blockText, 0, 1200) : mb_substr(strip_tags($html), 0, 1200);
 
-            $description = $blockText !== '' ? mb_substr($blockText, 0, 1200) : '';
-
-            if ($group['title'] === null && $description === '') {
-                continue;
+            // Clean title fallback using subject or first heading
+            $title = $group['title'];
+            if (! $title && $subject) {
+                $cleanSubject = preg_replace('/^(Fwd:|FW:|Re:|New job alert:?|Upwork Job:?)\s*/i', '', $subject);
+                $title = trim($cleanSubject);
             }
 
             $jobs[] = [
-                'title'            => $group['title'] ?? 'Untitled job',
+                'title'            => $title ?: 'Upwork Job Posting',
                 'url'              => $group['url'],
                 'ciphertext'       => $ciphertext,
                 'description'      => $description,
                 'budget'           => $budget,
                 'job_type'         => $jobType,
-                'payment_verified' => true, // unknown in emails — don't false-flag
+                'payment_verified' => true,
             ];
         }
 
@@ -97,9 +111,9 @@ class UpworkEmailParser
         $current = $node->parentNode;
         $depth = 0;
 
-        while ($current !== null && $depth < 4) {
+        while ($current !== null && $depth < 5) {
             $tag = strtolower($current->nodeName ?? '');
-            if (in_array($tag, ['td', 'div', 'table'], true) && mb_strlen(trim($current->textContent ?? '')) > 120) {
+            if (in_array($tag, ['td', 'div', 'table', 'section', 'article'], true) && mb_strlen(trim($current->textContent ?? '')) > 80) {
                 return $current;
             }
             $current = $current->parentNode;
