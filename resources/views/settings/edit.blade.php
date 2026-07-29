@@ -96,7 +96,7 @@
   <div style="margin-top: 16px; font-size: 13.5px; color: var(--text-muted); line-height: 1.8;">
     <ol style="margin-left: 18px;">
       <li>On Upwork, create <b>Saved Searches</b> for your skills and enable email alerts.</li>
-      <li>In Gmail, create a filter: <code style="font-family: var(--font-mono); background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">from:donotreply@upwork.com</code> → Forward to the address above.</li>
+      <li>In Gmail, create a filter: <code style="font-family: var(--font-mono); background: #f1f5f9; padding: 2px 6px; border-radius: 4px;">from:upwork.com</code> → Forward to the address above.</li>
       <li>When Gmail sends confirmation, click the verification link on this page to activate.</li>
     </ol>
   </div>
