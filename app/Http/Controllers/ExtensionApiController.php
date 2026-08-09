@@ -11,6 +11,29 @@ use Illuminate\Support\Facades\Log;
 class ExtensionApiController extends Controller
 {
     /**
+     * Check extension user account and trial status
+     * GET /api/extension/status
+     */
+    public function status(Request $request)
+    {
+        $token = $request->header('X-Webhook-Token') ?? $request->input('token');
+        $user = User::where('webhook_token', $token)->first();
+
+        if (! $user) {
+            return response()->json(['connected' => false, 'error' => 'Invalid Webhook Token'], 401);
+        }
+
+        return response()->json([
+            'connected'       => true,
+            'is_approved'     => (bool) $user->is_approved,
+            'can_generate'    => $user->canGenerate(),
+            'letters_used'    => $user->letters_used,
+            'monthly_quota'   => $user->monthly_quota,
+            'quota_remaining' => max(0, $user->monthly_quota - $user->letters_used),
+        ]);
+    }
+
+    /**
      * Endpoint for Chrome / Cross-Browser Extension: POST /api/extension/generate
      * Header: X-Webhook-Token
      * Body: { title, description, jobUrl, ciphertext, budget, jobType, screeningQuestions }
@@ -24,12 +47,12 @@ class ExtensionApiController extends Controller
             return response()->json(['error' => 'Unauthorized: Invalid FirstBid.in Webhook Token.'], 401);
         }
 
-        if (! $user::is_approved) {
+        if (! $user->is_approved) {
             return response()->json(['error' => 'Your account is pending admin approval.'], 403);
         }
 
         if (! $user->canGenerate()) {
-            return response()->json(['error' => 'Monthly proposal limit reached or trial ended.'], 403);
+            return response()->json(['error' => 'Your free trial has ended or monthly proposal limit reached. Please upgrade your plan on FirstBid.in to continue.'], 403);
         }
 
         $p = $request->all();

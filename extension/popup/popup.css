@@ -98,6 +98,11 @@ body {
   box-shadow: 0 0 0 3px rgba(20, 168, 0, 0.2);
 }
 
+.status-dot.red {
+  background: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
 .form-group {
   margin-bottom: 14px;
 }
