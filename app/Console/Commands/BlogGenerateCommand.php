@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Blog;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+
+class BlogGenerateCommand extends Command
+{
+    protected $signature = 'blog:generate {--topic= : Specific topic to generate}';
+    protected $description = 'Automated AI Blog Generator for Upwork proposal strategy & SEO traffic';
+
+    public function handle()
+    {
+        $this->info('Starting AI Blog post generation...');
+
+        $topics = [
+            'How to Write Winning Upwork Proposals in 2026 That Get Hired Fast',
+            '3 Opening Hook Formulas for Upwork Proposals That Double Client Reply Rates',
+            'Fixed Price vs Hourly Upwork Bidding Strategy: How to Calculate Subtask Effort',
+            'How to Answer Upwork Screening Questions to Win Enterprise Clients',
+            'Avoid Upwork Account Suspensions: Best Practices for AI Proposal Writing',
+            'How Top Freelancers Use AI to Draft Cover Letters in 60 Seconds',
+        ];
+
+        $topic = $this->option('topic') ?: $topics[array_rand($topics)];
+
+        $prompt = <<<PROMPT
+You are a senior freelance growth strategist and SEO content writer. Write a detailed, highly engaging 1,000+ word blog article for Upwork freelancers titled: "{$topic}".
+
+Use Markdown headers (##, ###), bold text, bullet points, and clean paragraphs. Sound professional, specific, and practical. Do NOT use cheesy buzzwords ("seamless", "game-changer").
+
+Structure your response using these exact demarcations:
+[TITLE] Write Title Here [/TITLE]
+[META_TITLE] Write Meta Title Here [/META_TITLE]
+[META_DESCRIPTION] Write Meta Description Here [/META_DESCRIPTION]
+[CONTENT]
+Write full markdown article body here...
+[/CONTENT]
+PROMPT;
+
+        try {
+            $res = Http::connectTimeout(10)
+                ->timeout(60)
+                ->withHeaders([
+                    'x-api-key'         => config('services.anthropic.key'),
+                    'anthropic-version' => '2023-06-01',
+                    'content-type'      => 'application/json',
+                ])
+                ->post('https://api.anthropic.com/v1/messages', [
+                    'model'      => config('services.anthropic.model', 'claude-sonnet-4-6'),
+                    'max_tokens' => 2500,
+                    'messages'   => [
+                        ['role' => 'user', 'content' => $prompt],
+                    ],
+                ])
+                ->json();
+
+            $text = collect($res['content'] ?? [])->where('type', 'text')->pluck('text')->implode("\n");
+
+            preg_match('/\[TITLE\](.*?)\[\/TITLE\]/s', $text, $tM);
+            preg_match('/\[META_TITLE\](.*?)\[\/META_TITLE\]/s', $text, $mtM);
+            preg_match('/\[META_DESCRIPTION\](.*?)\[\/META_DESCRIPTION\]/s', $text, $mdM);
+            preg_match('/\[CONTENT\](.*?)\[\/CONTENT\]/s', $text, $cM);
+
+            $title = isset($tM[1]) ? trim($tM[1]) : $topic;
+            $metaTitle = isset($mtM[1]) ? trim($mtM[1]) : $title;
+            $metaDescription = isset($mdM[1]) ? trim($mdM[1]) : Str::limit(strip_tags($text), 150);
+            $rawContent = isset($cM[1]) ? trim($cM[1]) : $text;
+
+            if (empty($rawContent)) {
+                $this->error('Empty blog content returned.');
+                return 1;
+            }
+
+            // Convert basic Markdown headers & paragraphs to clean HTML
+            $contentHtml = preg_replace('/^### (.*?)$/m', '<h3>$1</h3>', $rawContent);
+            $contentHtml = preg_replace('/^## (.*?)$/m', '<h2>$1</h2>', $contentHtml);
+            $contentHtml = preg_replace('/^\* (.*?)$/m', '<li>$1</li>', $contentHtml);
+            $contentHtml = preg_replace('/^- (.*?)$/m', '<li>$1</li>', $contentHtml);
+            $contentHtml = nl2br($contentHtml);
+
+            $slug = Str::slug($title);
+            if (Blog::where('slug', $slug)->exists()) {
+                $slug .= '-' . Str::random(5);
+            }
+
+            $blog = Blog::create([
+                'slug'                 => $slug,
+                'title'                => $title,
+                'meta_title'           => $metaTitle,
+                'meta_description'     => $metaDescription,
+                'content'              => $contentHtml,
+                'category'             => 'Upwork Strategy',
+                'reading_time_minutes' => 5,
+                'is_published'         => true,
+                'published_at'         => now(),
+            ]);
+
+            $this->info("Successfully generated and published blog: {$blog->title} (Slug: {$blog->slug})");
+            return 0;
+        } catch (\Throwable $e) {
+            $this->error("Blog generation error: " . $e->getMessage());
+            return 1;
+        }
+    }
+}

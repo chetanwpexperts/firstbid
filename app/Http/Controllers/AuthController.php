@@ -18,6 +18,11 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Anti-Bot Honeypot trap check
+        if (! empty($request->input('website_hp'))) {
+            return back()->withErrors(['email' => 'Automated bot registration rejected.']);
+        }
+
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],

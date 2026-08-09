@@ -20,6 +20,7 @@
     <nav class="nav-links">
       <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Jobs Inbox</a>
       <a class="nav-link {{ request()->routeIs('extension') ? 'active' : '' }}" href="{{ route('extension') }}">Extension 🧩</a>
+      <a class="nav-link {{ request()->routeIs('blog.*') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog 📚</a>
       <a class="nav-link {{ request()->routeIs('settings') ? 'active' : '' }}" href="{{ route('settings') }}">Settings</a>
       @if(auth()->user()?->is_admin)
       <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }}">Users</a>
@@ -58,6 +59,7 @@
     @else
     <nav class="nav-links">
       <a class="nav-link {{ request()->routeIs('extension') ? 'active' : '' }}" href="{{ route('extension') }}">Extension 🧩</a>
+      <a class="nav-link {{ request()->routeIs('blog.*') ? 'active' : '' }}" href="{{ route('blog.index') }}">Blog 📚</a>
       <a class="nav-link" href="{{ route('login') }}">Log in</a>
       <a class="btn btn-sm" href="{{ route('register') }}">Start Free Trial</a>
     </nav>

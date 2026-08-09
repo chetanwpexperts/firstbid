@@ -15,6 +15,7 @@ Route::get('/', fn () => auth()->check()
     ? redirect()->route('dashboard')
     : view('landing'));
 
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ExtensionDownloadController;
 use App\Http\Controllers\ExtensionReviewController;
 use App\Models\ExtensionReview;
@@ -22,6 +23,8 @@ use App\Models\ExtensionReview;
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
 Route::get('/privacy', fn () => view('privacy'))->name('privacy');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/extension', function () {
     $avgRating = ExtensionReview::avg('rating') ? round(ExtensionReview::avg('rating'), 1) : 0;
     $reviewsCount = ExtensionReview::count();
@@ -32,7 +35,7 @@ Route::get('/extension', function () {
 })->name('extension');
 
 // Guest routes
-Route::middleware('guest')->group(function () {
+Route::middleware(['guest', 'throttle:10,1'])->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

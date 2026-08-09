@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
 use Illuminate\Http\Response;
 
 class SeoController extends Controller
@@ -21,17 +22,43 @@ class SeoController extends Controller
 
     public function sitemap(): Response
     {
-        $url = url('/');
         $date = date('Y-m-d');
+        $baseUrl = config('app.url', url('/'));
+
+        $routes = [
+            ['url' => url('/'), 'priority' => '1.0', 'freq' => 'daily'],
+            ['url' => route('extension'), 'priority' => '0.9', 'freq' => 'weekly'],
+            ['url' => route('blog.index'), 'priority' => '0.8', 'freq' => 'daily'],
+            ['url' => route('privacy'), 'priority' => '0.3', 'freq' => 'monthly'],
+            ['url' => route('login'), 'priority' => '0.5', 'freq' => 'monthly'],
+            ['url' => route('register'), 'priority' => '0.7', 'freq' => 'monthly'],
+        ];
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        $xml .= '<url>';
-        $xml .= "<loc>{$url}</loc>";
-        $xml .= "<lastmod>{$date}</lastmod>";
-        $xml .= '<changefreq>daily</changefreq>';
-        $xml .= '<priority>1.0</priority>';
-        $xml .= '</url>';
+
+        foreach ($routes as $r) {
+            $xml .= '<url>';
+            $xml .= "<loc>{$r['url']}</loc>";
+            $xml .= "<lastmod>{$date}</lastmod>";
+            $xml .= "<changefreq>{$r['freq']}</changefreq>";
+            $xml .= "<priority>{$r['priority']}</priority>";
+            $xml .= '</url>';
+        }
+
+        // Add dynamic blog posts to sitemap
+        $blogs = Blog::where('is_published', true)->latest('published_at')->get();
+        foreach ($blogs as $b) {
+            $blogUrl = route('blog.show', $b->slug);
+            $modDate = $b->updated_at->format('Y-m-d');
+            $xml .= '<url>';
+            $xml .= "<loc>{$blogUrl}</loc>";
+            $xml .= "<lastmod>{$modDate}</lastmod>";
+            $xml .= '<changefreq>weekly</changefreq>';
+            $xml .= '<priority>0.7</priority>';
+            $xml .= '</url>';
+        }
+
         $xml .= '</urlset>';
 
         return response($xml, 200, ['Content-Type' => 'application/xml']);

@@ -10,6 +10,10 @@
 
     <form method="POST" action="{{ route('register') }}">
       @csrf
+      <!-- Hidden Anti-Bot Trap Field -->
+      <div style="display:none !important; visibility:hidden !important; opacity:0 !important; position:absolute !important; left:-9999px !important;">
+        <input type="text" name="website_hp" tabindex="-1" autocomplete="off">
+      </div>
       <div class="form-group">
         <label class="form-label">Full Name</label>
         <input type="text" name="name" value="{{ old('name') }}" required placeholder="Jane Doe">
