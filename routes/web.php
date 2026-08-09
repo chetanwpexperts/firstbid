@@ -32,8 +32,9 @@ Route::get('/extension', function () {
     $reviewsCount = ExtensionReview::count();
     $userReview = auth()->check() ? ExtensionReview::where('user_id', auth()->id())->first() : null;
     $recentReviews = ExtensionReview::with('user')->latest()->take(6)->get();
+    $isExtensionApproved = (bool) config('services.extension.approved', false);
 
-    return view('extension', compact('avgRating', 'reviewsCount', 'userReview', 'recentReviews'));
+    return view('extension', compact('avgRating', 'reviewsCount', 'userReview', 'recentReviews', 'isExtensionApproved'));
 })->name('extension');
 
 // Guest routes

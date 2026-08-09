@@ -62,5 +62,8 @@ TXT),
     'ga' => [
         'measurement_id' => env('GA_MEASUREMENT_ID'),
     ],
+    'extension' => [
+        'approved' => env('EXTENSION_APPROVED', false),
+    ],
 
 ];
