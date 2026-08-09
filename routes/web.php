@@ -21,6 +21,7 @@ use App\Models\ExtensionReview;
 
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
+Route::get('/privacy', fn () => view('privacy'))->name('privacy');
 Route::get('/extension', function () {
     $avgRating = ExtensionReview::avg('rating') ? round(ExtensionReview::avg('rating'), 1) : 0;
     $reviewsCount = ExtensionReview::count();

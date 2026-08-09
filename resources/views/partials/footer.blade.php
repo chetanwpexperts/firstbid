@@ -45,7 +45,7 @@
     <!-- Bottom Meta Row -->
     <div class="footer-bottom-row">
       <div class="footer-copy">
-        © {{ date('Y') }} <strong>FirstBid.in AI Inc.</strong> All rights reserved.
+        © {{ date('Y') }} <strong>FirstBid.in AI Inc.</strong> All rights reserved. · <a href="{{ route('privacy') }}" style="color: var(--text-muted); text-decoration: underline;">Privacy Policy</a>
       </div>
       <div class="footer-compliance">
         🛡️ Zero Upwork API Tokens • Local RSS & Webhook Native
