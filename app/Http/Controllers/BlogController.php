@@ -23,10 +23,19 @@ class BlogController extends Controller
         return view('blog.index', compact('blogs'));
     }
 
-    public function show(string $slug)
+    public function show(Request $request, string $slug)
     {
         $blog = Blog::where('slug', $slug)->where('is_published', true)->firstOrFail();
-        $blog->increment('views_count');
+
+        // Anti-Spam & Bot Filtering: Only count real unique visitor views per session
+        $userAgent = strtolower($request->header('User-Agent', ''));
+        $isBot = preg_match('/(googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|crawler|spider|bot)/i', $userAgent);
+        $sessionKey = 'viewed_blog_' . $blog->id;
+
+        if (! $isBot && ! $request->session()->has($sessionKey)) {
+            $blog->increment('views_count');
+            $request->session()->put($sessionKey, true);
+        }
 
         $relatedBlogs = Blog::where('is_published', true)
             ->where('id', '!=', $blog->id)
