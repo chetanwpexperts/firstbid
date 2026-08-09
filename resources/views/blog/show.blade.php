@@ -81,6 +81,73 @@
     </div>
   </div>
 
+  <!-- Comments Section -->
+  <div class="glass-panel" style="padding: 36px 40px; background: #ffffff; margin-bottom: 32px; border-color: var(--border);">
+    <h3 style="font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+      💬 Comments <span class="badge" style="background: var(--upwork-tint); color: var(--upwork-tint-text); font-family: var(--font-mono); font-size: 12px; font-weight: 800;">{{ $comments->count() }}</span>
+    </h3>
+
+    <!-- Published Comments List -->
+    @if($comments->count() > 0)
+      <div style="display: flex; flex-direction: column; gap: 18px; margin-bottom: 32px;">
+        @foreach($comments as $c)
+          <div style="padding: 16px 20px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 30px; height: 30px; background: var(--upwork-green); color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; font-family: var(--font-mono);">
+                  {{ strtoupper(substr($c->author_name, 0, 1)) }}
+                </div>
+                <div>
+                  <span style="font-weight: 700; font-size: 14px; color: var(--text-dark);">{{ $c->author_name }}</span>
+                  @if($c->user_id)
+                    <span class="badge" style="background: #dcfce7; color: #166534; font-size: 10px; padding: 1px 6px; margin-left: 4px;">Verified User</span>
+                  @endif
+                </div>
+              </div>
+              <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">{{ $c->created_at->diffForHumans() }}</span>
+            </div>
+            <p style="font-size: 14px; color: var(--text-main); line-height: 1.55; margin: 0; white-space: pre-line;">{{ $c->comment }}</p>
+          </div>
+        @endforeach
+      </div>
+    @else
+      <div style="padding: 20px; text-align: center; background: #f8fafc; border: 1px dashed var(--border); border-radius: 10px; color: var(--text-muted); font-size: 14px; margin-bottom: 28px;">
+        No comments yet. Be the first to share your thoughts on this article!
+      </div>
+    @endif
+
+    <!-- Leave a Comment Form -->
+    <h4 style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 14px;">Leave a Comment</h4>
+    <form method="POST" action="{{ route('blog.comment', $blog->slug) }}">
+      @csrf
+      <!-- Hidden Anti-Bot Honeypot -->
+      <div style="display:none !important; visibility:hidden !important; opacity:0 !important; position:absolute !important; left:-9999px !important;">
+        <input type="text" name="comment_hp" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 14px;">
+        <div>
+          <label class="form-label" style="font-size: 12.5px;">Your Name *</label>
+          <input type="text" name="author_name" value="{{ auth()->user()->name ?? old('author_name') }}" required placeholder="Jane Doe" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 12.5px;">Your Email *</label>
+          <input type="email" name="author_email" value="{{ auth()->user()->email ?? old('author_email') }}" required placeholder="jane@example.com" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label class="form-label" style="font-size: 12.5px;">Your Comment *</label>
+        <textarea name="comment" rows="4" required placeholder="Share your experience or ask a question about this proposal strategy..." style="width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; resize: vertical;">{{ old('comment') }}</textarea>
+      </div>
+
+      <button type="submit" class="btn" style="background: var(--upwork-green); padding: 10px 24px; font-size: 14px; font-weight: 700;">
+        Post Comment 💬
+      </button>
+    </form>
+  </div>
+
 <script>
 function toggleBlogLike() {
   fetch('{{ route("blog.like", $blog->slug) }}', {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\BlogComment;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -43,9 +44,10 @@ class BlogController extends Controller
             ->take(3)
             ->get();
 
+        $comments = $blog->comments()->where('is_approved', true)->latest()->get();
         $isLiked = $request->session()->has('liked_blog_' . $blog->id);
 
-        return view('blog.show', compact('blog', 'relatedBlogs', 'isLiked'));
+        return view('blog.show', compact('blog', 'relatedBlogs', 'comments', 'isLiked'));
     }
 
     public function toggleLike(Request $request, string $slug)
@@ -74,5 +76,32 @@ class BlogController extends Controller
         }
 
         return back();
+    }
+
+    public function storeComment(Request $request, string $slug)
+    {
+        $blog = Blog::where('slug', $slug)->where('is_published', true)->firstOrFail();
+
+        // Anti-Bot Trap
+        if (! empty($request->input('comment_hp'))) {
+            return back()->with('ok', 'Comment submitted successfully!');
+        }
+
+        $data = $request->validate([
+            'author_name'  => ['required', 'string', 'max:80'],
+            'author_email' => ['required', 'email', 'max:150'],
+            'comment'      => ['required', 'string', 'min:3', 'max:2000'],
+        ]);
+
+        BlogComment::create([
+            'blog_id'      => $blog->id,
+            'user_id'      => auth()->id(),
+            'author_name'  => strip_tags($data['author_name']),
+            'author_email' => strip_tags($data['author_email']),
+            'comment'      => strip_tags($data['comment']),
+            'is_approved'  => true,
+        ]);
+
+        return back()->with('ok', 'Thank you! Your comment has been posted.');
     }
 }

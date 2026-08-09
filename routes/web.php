@@ -26,6 +26,7 @@ Route::get('/privacy', fn () => view('privacy'))->name('privacy');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('/blog/{slug}/like', [BlogController::class, 'toggleLike'])->middleware('throttle:30,1')->name('blog.like');
+Route::post('/blog/{slug}/comment', [BlogController::class, 'storeComment'])->middleware('throttle:5,1')->name('blog.comment');
 Route::get('/extension', function () {
     $avgRating = ExtensionReview::avg('rating') ? round(ExtensionReview::avg('rating'), 1) : 0;
     $reviewsCount = ExtensionReview::count();
