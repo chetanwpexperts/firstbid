@@ -8,11 +8,11 @@
         </svg>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--text-dark); line-height: 1;">
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; white-space: nowrap;">
+        <span style="font-size: 21px; font-weight: 800; letter-spacing: -0.03em; color: var(--text-dark); line-height: 1;">
           First<span style="color: var(--upwork-green);">Bid</span><span style="color: var(--text-dark); font-weight: 800;">.in</span>
         </span>
-        <span class="ai-badge" style="font-size: 10.5px; font-family: var(--font-mono); background: var(--upwork-tint); color: var(--upwork-tint-text); border: 1px solid var(--upwork-tint-border); padding: 2px 7px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">AI 2.0</span>
+        <span class="ai-badge" style="font-size: 10px; font-family: var(--font-mono); background: var(--upwork-tint); color: var(--upwork-tint-text); border: 1px solid var(--upwork-tint-border); padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase; white-space: nowrap; display: inline-block; vertical-align: middle;">AI 2.0</span>
       </div>
     </a>
 
