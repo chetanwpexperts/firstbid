@@ -47,7 +47,14 @@
       </div>
 
       <!-- Google Store Review Status Alert Banner -->
-      @if(! ($isExtensionApproved ?? false))
+      @if($isReviewer ?? false)
+        <div style="background: #dcfce7; border: 1px solid #86efac; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; color: #166534; font-size: 13.5px; line-height: 1.5;">
+          <span style="font-size: 20px; flex-shrink: 0;">🛡️</span>
+          <div>
+            <strong>CHROME WEB STORE REVIEWER ACCESS ACTIVE:</strong> Logged in as official Chrome Store Reviewer (<code style="font-family: var(--font-mono); background: #bbf7d0; padding: 1px 6px; border-radius: 4px;">demo@firstbidin.com</code>). Extension package download is unlocked for review.
+          </div>
+        </div>
+      @elseif(! ($isExtensionApproved ?? false))
         <div style="background: #fffbebf5; border: 1px solid #fcd34d; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; color: #92400e; font-size: 13.5px; line-height: 1.5;">
           <span style="font-size: 20px; flex-shrink: 0;">🟡</span>
           <div>
@@ -58,7 +65,7 @@
 
       <!-- Store Action Buttons (THEME MATCHED EMERALD GREEN) -->
       <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-        @if(! ($isExtensionApproved ?? false))
+        @if(! ($isExtensionApproved ?? false) && ! ($isReviewer ?? false))
           <button type="button" class="btn" onclick="alert('The FirstBidIn Chrome Extension is currently undergoing Google Chrome Web Store review. Public downloads will open as soon as approval is granted!')" style="background: #e2e8f0; color: #64748b; cursor: not-allowed; padding: 12px 26px; font-size: 14.5px; font-weight: 700; border-radius: 24px; display: inline-flex; align-items: center; gap: 10px; border: 1px solid #cbd5e1;">
             ⏳ Under Google Web Store Review (Downloads Temporarily Locked)
           </button>

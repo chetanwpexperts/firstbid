@@ -15,13 +15,15 @@ class ExtensionDownloadController extends Controller
     public function download()
     {
         $user = auth()->user();
-
-        if (! config('services.extension.approved', false)) {
-            return back()->with('error', 'The FirstBid.in Chrome Extension is currently undergoing Google Chrome Web Store review. Public downloads will be enabled as soon as Google approval is complete.');
-        }
+        $isReviewer = $user && $user->email === 'demo@firstbidin.com';
+        $isApproved = (bool) config('services.extension.approved', false);
 
         if (! $user) {
             return redirect()->route('login')->with('error', 'Please log in to download and install the FirstBid.in extension.');
+        }
+
+        if (! $isApproved && ! $isReviewer) {
+            return back()->with('error', 'The FirstBid.in Chrome Extension is currently undergoing Google Chrome Web Store review. Public downloads will be enabled as soon as Google approval is complete.');
         }
 
         if (! $user->is_approved) {
