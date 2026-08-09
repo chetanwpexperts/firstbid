@@ -45,7 +45,7 @@
     <!-- Bottom Meta Row -->
     <div class="footer-bottom-row">
       <div class="footer-copy">
-        © {{ date('Y') }} <strong>FirstBid.in AI Inc.</strong> All rights reserved. · <a href="{{ route('privacy') }}" style="color: var(--text-muted); text-decoration: underline;">Privacy Policy</a> · <span style="font-weight: 600;">Developed by <a href="https://github.com/chetanwpexperts" target="_blank" style="color: var(--upwork-green); text-decoration: none; font-weight: 700;">chetanbuilds ⚡</a></span>
+        © {{ date('Y') }} <strong>FirstBid.in AI Inc.</strong> All rights reserved. · <a href="{{ route('privacy') }}" style="color: var(--text-muted); text-decoration: underline;">Privacy Policy</a> · <a href="{{ route('terms') }}" style="color: var(--text-muted); text-decoration: underline;">Terms of Service</a> · <a href="{{ route('security') }}" style="color: var(--text-muted); text-decoration: underline;">Security Policy</a> · <span style="font-weight: 600;">Developed by <a href="https://github.com/chetanwpexperts" target="_blank" style="color: var(--upwork-green); text-decoration: none; font-weight: 700;">chetanbuilds ⚡</a></span>
       </div>
       <div class="footer-compliance">
         🛡️ Zero Upwork API Tokens • Local RSS & Webhook Native

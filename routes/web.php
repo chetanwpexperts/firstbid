@@ -23,6 +23,8 @@ use App\Models\ExtensionReview;
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
 Route::get('/privacy', fn () => view('privacy'))->name('privacy');
+Route::get('/terms', fn () => view('terms'))->name('terms');
+Route::get('/security-policy', fn () => view('security'))->name('security');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::post('/blog/{slug}/like', [BlogController::class, 'toggleLike'])->middleware('throttle:30,1')->name('blog.like');

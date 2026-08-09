@@ -30,6 +30,8 @@ class SeoController extends Controller
             ['url' => route('extension'), 'priority' => '0.9', 'freq' => 'weekly'],
             ['url' => route('blog.index'), 'priority' => '0.8', 'freq' => 'daily'],
             ['url' => route('privacy'), 'priority' => '0.3', 'freq' => 'monthly'],
+            ['url' => route('terms'), 'priority' => '0.3', 'freq' => 'monthly'],
+            ['url' => route('security'), 'priority' => '0.5', 'freq' => 'monthly'],
             ['url' => route('login'), 'priority' => '0.5', 'freq' => 'monthly'],
             ['url' => route('register'), 'priority' => '0.7', 'freq' => 'monthly'],
         ];

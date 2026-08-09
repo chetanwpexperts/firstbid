@@ -43,7 +43,7 @@
       <div style="margin-top: 18px;">
         <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-muted); cursor: pointer; line-height: 1.45;">
           <input type="checkbox" name="terms" required style="margin-top: 2px;">
-          <span>I agree to FirstBid's <b>Terms of Service</b> and <b>Account Security Policy</b> (Human-in-the-Loop Writing Assistance only, zero auto-submit bots).</span>
+          <span>I agree to FirstBid's <a href="{{ route('terms') }}" target="_blank" style="color: var(--upwork-green); font-weight: 700; text-decoration: underline;">Terms of Service</a> and <a href="{{ route('security') }}" target="_blank" style="color: var(--upwork-green); font-weight: 700; text-decoration: underline;">Account Security Policy</a> (Human-in-the-Loop Writing Assistance only, zero auto-submit bots).</span>
         </label>
       </div>
 
