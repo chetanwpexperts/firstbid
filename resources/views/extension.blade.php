@@ -43,29 +43,42 @@
         </div>
 
         <div>🛡️ <span style="font-weight: 600; color: var(--upwork-tint-text);">100% Upwork ToS Safe</span></div>
+        <div>🔐 <span style="font-weight: 600; color: var(--text-dark);">FirstBid Plan Required</span></div>
       </div>
 
-      <!-- Store Action Buttons -->
+      <!-- Store Action Buttons (STRICT AUTH PROTECTION) -->
       <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-        @if($webstoreUrl)
-          <a href="{{ $webstoreUrl }}" target="_blank" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
-            </svg>
-            Add to Chrome
+        @guest
+          <a href="{{ route('register') }}" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+            🔒 Log In or Start Trial to Install Extension
           </a>
         @else
-          <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
-            </svg>
-            Add to Chrome
-          </button>
-        @endif
+          @if(auth()->user()->is_approved && auth()->user()->canGenerate())
+            @if($webstoreUrl)
+              <a href="{{ $webstoreUrl }}" target="_blank" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
+                </svg>
+                Add to Chrome
+              </a>
+            @else
+              <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
+                </svg>
+                Add to Chrome
+              </button>
+            @endif
 
-        <a href="{{ route('extension.download') }}" class="btn btn-ghost" style="padding: 11px 20px; font-size: 14px; border-radius: 24px;">
-          📥 Download Extension Package (.zip)
-        </a>
+            <a href="{{ route('extension.download') }}" class="btn btn-ghost" style="padding: 11px 20px; font-size: 14px; border-radius: 24px;">
+              📥 Download Extension Package (.zip)
+            </a>
+          @else
+            <a href="{{ route('dashboard') }}" class="btn" style="background: var(--upwork-green); padding: 12px 24px; font-size: 14px; border-radius: 24px; text-decoration: none;">
+              🔒 Upgrade Plan / Complete Account Approval to Download Extension
+            </a>
+          @endif
+        @endguest
       </div>
 
     </div>
@@ -214,7 +227,8 @@
   </div>
 </div>
 
-<!-- Add to Chrome Quick Installation Guide Modal -->
+@auth
+<!-- Add to Chrome Quick Installation Guide Modal (AUTH USERS ONLY) -->
 <div id="installModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
   <div style="background: #ffffff; border-radius: 20px; max-width: 520px; width: 100%; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); text-align: left; position: relative;">
     <button type="button" onclick="closeInstallModal()" style="position: absolute; right: 18px; top: 18px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);">✕</button>
@@ -256,4 +270,5 @@ function closeInstallModal() {
   document.getElementById('installModal').style.display = 'none';
 }
 </script>
+@endauth
 @endsection

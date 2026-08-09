@@ -10,10 +10,24 @@ class ExtensionDownloadController extends Controller
 {
     /**
      * Dynamically packages and serves the extension as firstbid-extension.zip
-     * Route: GET /extension/download
+     * Route: GET /extension/download (Protected - Requires Auth & Active Plan)
      */
     public function download()
     {
+        $user = auth()->user();
+
+        if (! $user) {
+            return redirect()->route('login')->with('error', 'Please log in to download and install the FirstBid.in extension.');
+        }
+
+        if (! $user->is_approved) {
+            return redirect()->route('pending')->with('error', 'Your account is pending approval before you can access the extension.');
+        }
+
+        if (! $user->canGenerate()) {
+            return redirect()->route('dashboard')->with('error', 'Please upgrade your plan to download and use the browser extension.');
+        }
+
         $extensionDir = base_path('extension');
         $zipPath = storage_path('app/firstbid-extension.zip');
 

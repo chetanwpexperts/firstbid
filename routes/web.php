@@ -29,7 +29,6 @@ Route::get('/extension', function () {
 
     return view('extension', compact('avgRating', 'reviewsCount', 'userReview', 'recentReviews'));
 })->name('extension');
-Route::get('/extension/download', [ExtensionDownloadController::class, 'download'])->name('extension.download');
 
 // Guest routes
 Route::middleware('guest')->group(function () {
@@ -63,6 +62,7 @@ Route::middleware(['auth', EnsureUserIsApproved::class])->group(function () {
     Route::post('/settings/test-telegram', [SettingsController::class, 'testTelegram'])->name('settings.testTelegram');
     Route::get('/settings/verification', [SettingsController::class, 'verification'])->name('settings.verification');
 
+    Route::get('/extension/download', [ExtensionDownloadController::class, 'download'])->name('extension.download');
     Route::post('/extension/review', [ExtensionReviewController::class, 'store'])->name('extension.review');
     Route::post('/notifications/seen', [NotificationController::class, 'markSeen'])->name('notifications.seen');
 });
