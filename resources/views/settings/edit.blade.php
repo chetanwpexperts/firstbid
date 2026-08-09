@@ -80,8 +80,13 @@
 </form>
 
 <div class="glass-panel">
-  <h2 style="font-size: 13px; font-family: var(--font-mono); text-transform: uppercase; color: var(--upwork-dark); font-weight: 700; margin-bottom: 8px;">2 · Get jobs by email (Free Forwarding)</h2>
-  <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 12px;">Forward your Upwork job-alert emails to this address and we'll turn them into AI proposals automatically.</p>
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+    <div>
+      <h2 style="font-size: 13px; font-family: var(--font-mono); text-transform: uppercase; color: var(--upwork-dark); font-weight: 700; margin: 0;">2 · Browser Extension (1-Click Upwork Auto-Fill)</h2>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">Install the browser extension to draft proposals and auto-fill cover letters directly inside Upwork job pages.</p>
+    </div>
+    <a href="{{ route('extension.download') }}" class="btn btn-sm" style="background: var(--upwork-green); padding: 8px 16px; font-size: 13px;">📥 Download Extension (.zip)</a>
+  </div>
   <div style="display: flex; gap: 10px; align-items: center;">
     <input type="text" id="inbox" readonly value="u_{{ $user->webhook_token }}@mail.firstbidin.com" style="font-family: var(--font-mono); font-size: 13.5px; background: var(--bg-subtle);">
     <button class="btn btn-ghost btn-sm" onclick="copyVal('inbox', this)" style="flex: none;">Copy Address</button>

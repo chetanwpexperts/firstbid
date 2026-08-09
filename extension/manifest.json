@@ -32,6 +32,15 @@
   "content_scripts": [
     {
       "matches": [
+        "https://*.firstbidin.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ],
+      "js": ["content/firstbid_sync.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
         "https://www.upwork.com/jobs/*",
         "https://www.upwork.com/freelance-jobs/apply/*",
         "https://www.upwork.com/nx/search/jobs/details/*",

@@ -16,10 +16,16 @@
     Draft tailored proposals and answer screening questions directly inside Upwork job pages in 1 click — without leaving your browser tab.
   </p>
 
+  <div style="display: flex; gap: 14px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 32px;">
+    <a href="{{ route('extension.download') }}" class="btn" style="padding: 14px 28px; font-size: 16px; background: var(--upwork-green); font-weight: 800; box-shadow: 0 4px 16px rgba(20, 168, 0, 0.3);">
+      📥 Download Extension (.zip)
+    </a>
+  </div>
+
   <div style="display: inline-block; background: #ffffff; border: 2px solid var(--upwork-green); border-radius: 14px; padding: 24px 32px; box-shadow: 0 10px 30px rgba(20,168,0,0.15); max-width: 520px; width: 100%;">
     <div style="font-size: 13px; font-family: var(--font-mono); text-transform: uppercase; color: var(--upwork-green); font-weight: 800; margin-bottom: 8px;">🎁 VIP Early Beta Access</div>
-    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Join the Chrome Extension Waitlist</h2>
-    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Be the first to get 1-click proposal auto-fill when the Chrome Extension launches.</p>
+    <h2 style="font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">1-Click Automatic Account Sync</h2>
+    <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">Download the extension ZIP above, load it into your browser, and it will automatically connect to your FirstBid account with zero manual setup!</p>
 
     <form method="POST" action="{{ route('feedback.store') }}" style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
       @csrf
@@ -28,9 +34,12 @@
 
       @guest
         <input type="email" name="email" required placeholder="Enter your email address..." style="padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; width: 100%;">
+        <button class="btn" type="submit" style="width: 100%; padding: 14px; font-size: 15.5px;">⚡ Request Early Beta Access</button>
+      @else
+        <a href="{{ route('extension.download') }}" class="btn" style="width: 100%; padding: 14px; font-size: 15.5px; background: var(--upwork-green); text-align: center; text-decoration: none;">
+          ⚡ Download & Install Extension
+        </a>
       @endguest
-
-      <button class="btn" type="submit" style="width: 100%; padding: 14px; font-size: 15.5px;">⚡ Request Early Beta Access</button>
     </form>
   </div>
 </div>

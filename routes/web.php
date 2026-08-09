@@ -15,10 +15,12 @@ Route::get('/', fn () => auth()->check()
     ? redirect()->route('dashboard')
     : view('landing'));
 
-// SEO & Search Indexing Routes
+use App\Http\Controllers\ExtensionDownloadController;
+
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
 Route::get('/extension', fn () => view('extension'))->name('extension');
+Route::get('/extension/download', [ExtensionDownloadController::class, 'download'])->name('extension.download');
 
 // Guest routes
 Route::middleware('guest')->group(function () {

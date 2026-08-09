@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+@auth <meta name="firstbid-token" content="{{ auth()->user()->webhook_token }}"> @endauth
 <meta name="description" content="Account-safe Upwork AI proposal generator & scope budget calculator. Real-time job alerts, mathematical subtask estimates, and tailored cover letters.">
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
