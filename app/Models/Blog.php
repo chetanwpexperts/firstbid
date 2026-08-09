@@ -18,6 +18,7 @@ class Blog extends Model
         'category',
         'reading_time_minutes',
         'views_count',
+        'likes_count',
         'is_published',
         'published_at',
     ];

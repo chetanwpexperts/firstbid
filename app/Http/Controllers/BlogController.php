@@ -43,6 +43,36 @@ class BlogController extends Controller
             ->take(3)
             ->get();
 
-        return view('blog.show', compact('blog', 'relatedBlogs'));
+        $isLiked = $request->session()->has('liked_blog_' . $blog->id);
+
+        return view('blog.show', compact('blog', 'relatedBlogs', 'isLiked'));
+    }
+
+    public function toggleLike(Request $request, string $slug)
+    {
+        $blog = Blog::where('slug', $slug)->where('is_published', true)->firstOrFail();
+        $sessionKey = 'liked_blog_' . $blog->id;
+
+        if ($request->session()->has($sessionKey)) {
+            $blog->decrement('likes_count');
+            $request->session()->forget($sessionKey);
+            $liked = false;
+        } else {
+            $blog->increment('likes_count');
+            $request->session()->put($sessionKey, true);
+            $liked = true;
+        }
+
+        $freshCount = max(0, $blog->fresh()->likes_count);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success'     => true,
+                'liked'       => $liked,
+                'likes_count' => $freshCount,
+            ]);
+        }
+
+        return back();
     }
 }

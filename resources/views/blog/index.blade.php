@@ -52,7 +52,11 @@
           </div>
 
           <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 14px; font-size: 12.5px; color: var(--text-muted);">
-            <span>{{ $b->published_at->format('M d, Y') }}</span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span>{{ $b->published_at->format('M d, Y') }}</span>
+              <span>•</span>
+              <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted);">❤️ {{ number_format($b->likes_count) }}</span>
+            </div>
             <a href="{{ route('blog.show', $b->slug) }}" style="color: var(--upwork-green); font-weight: 700; text-decoration: none;">
               Read Article ↗
             </a>

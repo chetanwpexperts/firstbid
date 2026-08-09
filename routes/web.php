@@ -25,6 +25,7 @@ Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
 Route::get('/privacy', fn () => view('privacy'))->name('privacy');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('/blog/{slug}/like', [BlogController::class, 'toggleLike'])->middleware('throttle:30,1')->name('blog.like');
 Route::get('/extension', function () {
     $avgRating = ExtensionReview::avg('rating') ? round(ExtensionReview::avg('rating'), 1) : 0;
     $reviewsCount = ExtensionReview::count();

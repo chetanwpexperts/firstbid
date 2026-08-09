@@ -49,7 +49,14 @@
 
     <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 16px; flex-wrap: wrap; gap: 10px;">
       <div>Published on <strong>{{ $blog->published_at->format('F j, Y') }}</strong> · FirstBidIn Team</div>
-      <div>👁️ {{ number_format($blog->views_count) }} views</div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span>👁️ {{ number_format($blog->views_count) }} views</span>
+        <button type="button" id="likeBtn" onclick="toggleBlogLike()" style="background: {{ ($isLiked ?? false) ? '#fef2f2' : '#ffffff' }}; border: 1px solid {{ ($isLiked ?? false) ? '#fca5a5' : 'var(--border)' }}; color: {{ ($isLiked ?? false) ? '#dc2626' : 'var(--text-dark)' }}; border-radius: 20px; padding: 4px 14px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+          <span id="likeIcon">{{ ($isLiked ?? false) ? '❤️' : '🤍' }}</span>
+          <span id="likeText">{{ ($isLiked ?? false) ? 'Liked' : 'Like' }}</span>
+          <span id="likeCountBadge" style="background: {{ ($isLiked ?? false) ? '#fee2e2' : 'var(--upwork-tint)' }}; color: {{ ($isLiked ?? false) ? '#991b1b' : 'var(--upwork-tint-text)' }}; padding: 1px 7px; border-radius: 10px; font-size: 11.5px; font-family: var(--font-mono);">{{ number_format($blog->likes_count) }}</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -61,13 +68,52 @@
 
     <!-- Social Sharing Bar -->
     <div style="border-top: 1px solid var(--border); margin-top: 36px; padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-      <span style="font-weight: 700; font-size: 13.5px; color: var(--text-dark);">Share this article:</span>
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-weight: 700; font-size: 13.5px; color: var(--text-dark);">Enjoyed this post?</span>
+        <button type="button" onclick="toggleBlogLike()" style="background: var(--upwork-green); color: #ffffff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+          ❤️ Show Support
+        </button>
+      </div>
       <div style="display: flex; gap: 10px;">
         <a href="https://twitter.com/intent/tweet?text={{ urlencode($blog->title) }}&url={{ urlencode(url()->current()) }}" target="_blank" class="btn btn-sm btn-ghost" style="font-size: 12.5px;">🐦 Twitter / X</a>
         <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode(url()->current()) }}" target="_blank" class="btn btn-sm btn-ghost" style="font-size: 12.5px;">💼 LinkedIn</a>
       </div>
     </div>
   </div>
+
+<script>
+function toggleBlogLike() {
+  fetch('{{ route("blog.like", $blog->slug) }}', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-TOKEN': '{{ csrf_token() }}',
+      'Accept': 'application/json'
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      const btn = document.getElementById('likeBtn');
+      const icon = document.getElementById('likeIcon');
+      const text = document.getElementById('likeText');
+      const badge = document.getElementById('likeCountBadge');
+
+      if (badge) badge.innerText = data.likes_count;
+      if (data.liked) {
+        if (btn) { btn.style.background = '#fef2f2'; btn.style.borderColor = '#fca5a5'; btn.style.color = '#dc2626'; }
+        if (icon) icon.innerText = '❤️';
+        if (text) text.innerText = 'Liked';
+        if (badge) { badge.style.background = '#fee2e2'; badge.style.color = '#991b1b'; }
+      } else {
+        if (btn) { btn.style.background = '#ffffff'; btn.style.borderColor = 'var(--border)'; btn.style.color = 'var(--text-dark)'; }
+        if (icon) icon.innerText = '🤍';
+        if (text) text.innerText = 'Like';
+        if (badge) { badge.style.background = 'var(--upwork-tint)'; badge.style.color = 'var(--upwork-tint-text)'; }
+      }
+    }
+  });
+}
+</script>
 
   <!-- Related Articles -->
   @if(($relatedBlogs ?? collect())->count() > 0)
