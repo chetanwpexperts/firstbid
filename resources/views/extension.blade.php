@@ -3,6 +3,10 @@
 @section('title', 'FirstBidIn — Upwork AI Proposal Assistant | Chrome Web Store')
 
 @section('content')
+@php
+  $webstoreUrl = config('services.chrome_webstore.url') ?: env('CHROME_WEBSTORE_URL');
+@endphp
+
 <!-- Chrome Web Store Style Hero Header -->
 <div class="glass-panel" style="padding: 32px; background: #ffffff; border-radius: 16px; border-color: var(--border); box-shadow: 0 8px 30px rgba(0,0,0,0.04); margin-bottom: 32px;">
   <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
@@ -42,13 +46,23 @@
 
       <!-- Store Primary Action Buttons -->
       <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
-        <!-- Official Chrome Blue Add to Chrome Button -->
-        <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
-          </svg>
-          Add to Chrome
-        </button>
+        @if($webstoreUrl)
+          <!-- Official Chrome Web Store Direct Install Button -->
+          <a href="{{ $webstoreUrl }}" target="_blank" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
+            </svg>
+            Add to Chrome
+          </a>
+        @else
+          <!-- Unpacked / Pre-Publish Direct Installation Guide Trigger -->
+          <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
+            </svg>
+            Add to Chrome
+          </button>
+        @endif
 
         <a href="{{ route('extension.download') }}" class="btn btn-ghost" style="padding: 11px 20px; font-size: 14px; border-radius: 24px;">
           📥 Download Web Store Package (.zip)
@@ -121,30 +135,36 @@
   </div>
 </div>
 
-<!-- Add to Chrome Confirmation Modal -->
-<div id="installModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-  <div style="background: #ffffff; border-radius: 20px; max-width: 460px; width: 100%; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); text-align: center; position: relative;">
+<!-- Add to Chrome Quick Installation Guide Modal -->
+<div id="installModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(6px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+  <div style="background: #ffffff; border-radius: 20px; max-width: 520px; width: 100%; padding: 28px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); text-align: left; position: relative;">
     <button type="button" onclick="closeInstallModal()" style="position: absolute; right: 18px; top: 18px; background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);">✕</button>
 
-    <div style="width: 54px; height: 54px; background: linear-gradient(135deg, #14a800 0%, #0e7a00 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 28px; margin: 0 auto 16px; box-shadow: 0 4px 14px rgba(20, 168, 0, 0.3);">
-      ⚡
+    <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+      <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #14a800 0%, #0e7a00 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; box-shadow: 0 4px 14px rgba(20, 168, 0, 0.3); flex-shrink: 0;">
+        ⚡
+      </div>
+      <div>
+        <h3 style="font-size: 19px; font-weight: 800; color: var(--text-dark); margin: 0;">
+          Add FirstBidIn to Browser
+        </h3>
+        <div style="font-size: 12.5px; color: var(--upwork-tint-text); font-weight: 700;">Zero Token Setup · Auto Account Sync</div>
+      </div>
     </div>
 
-    <h3 style="font-size: 20px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">
-      Add "FirstBidIn — Upwork AI Assistant"?
-    </h3>
-    <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
-      It will add 1-click proposal auto-fill to your browser. Your account will auto-connect with zero token setup!
-    </p>
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 13.5px; color: var(--text-main); line-height: 1.6;">
+      <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 8px;">Quick 2-Step Browser Install:</div>
+      <ol style="margin-left: 18px; display: flex; flex-direction: column; gap: 8px;">
+        <li>Click <b>Download Package</b> below to get the extension folder.</li>
+        <li>Open <code style="font-family: var(--font-mono); background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: var(--text-dark);">chrome://extensions</code> → Enable <b>Developer mode</b> → Click <b>Load unpacked</b> and select the unzipped folder.</li>
+      </ol>
+    </div>
 
-    <div style="display: flex; flex-direction: column; gap: 10px;">
-      <a href="{{ route('extension.download') }}" class="btn" style="background: #1a73e8; padding: 13px; font-size: 15px; font-weight: 700; border-radius: 10px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
-        </svg>
-        Add Extension to Browser
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button type="button" class="btn btn-ghost" onclick="closeInstallModal()" style="padding: 10px 18px; font-size: 13.5px;">Close</button>
+      <a href="{{ route('extension.download') }}" class="btn" style="background: #1a73e8; padding: 10px 22px; font-size: 14px; font-weight: 700; border-radius: 10px; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+        📥 Download Package & Install
       </a>
-      <button type="button" class="btn btn-ghost" onclick="closeInstallModal()" style="padding: 11px; font-size: 13.5px;">Cancel</button>
     </div>
   </div>
 </div>
