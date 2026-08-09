@@ -46,23 +46,23 @@
         <div>🔐 <span style="font-weight: 600; color: var(--text-dark);">FirstBid Plan Required</span></div>
       </div>
 
-      <!-- Store Action Buttons (STRICT AUTH PROTECTION) -->
+      <!-- Store Action Buttons (THEME MATCHED EMERALD GREEN) -->
       <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
         @guest
-          <a href="{{ route('register') }}" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <a href="{{ route('register') }}" class="btn" style="background: var(--upwork-green); padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(20, 168, 0, 0.35); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
             🔒 Log In or Start Trial to Install Extension
           </a>
         @else
           @if(auth()->user()->is_approved && auth()->user()->canGenerate())
             @if($webstoreUrl)
-              <a href="{{ $webstoreUrl }}" target="_blank" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
+              <a href="{{ $webstoreUrl }}" target="_blank" class="btn" style="background: var(--upwork-green); padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(20, 168, 0, 0.35); display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
                 </svg>
                 Add to Chrome
               </a>
             @else
-              <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px;">
+              <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: var(--upwork-green); padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(20, 168, 0, 0.35); display: inline-flex; align-items: center; gap: 10px;">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
                 </svg>
@@ -82,6 +82,52 @@
       </div>
 
     </div>
+  </div>
+</div>
+
+<!-- Detailed Explanation: What is the Extension & How it Works -->
+<div class="glass-panel" style="padding: 32px; background: #ffffff; margin-bottom: 32px;">
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+    <span style="font-size: 26px;">💡</span>
+    <div>
+      <h2 style="font-size: 22px; font-weight: 800; color: var(--text-dark); margin: 0;">
+        What is the FirstBidIn Extension & How Does it Work?
+      </h2>
+      <div style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">
+        Everything you need to know about using FirstBidIn directly on Upwork job pages.
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 24px;">
+    
+    <!-- Step 1 Card -->
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 14px; padding: 22px; position: relative;">
+      <div style="font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: var(--upwork-green); text-transform: uppercase; margin-bottom: 8px;">STEP 1 · AUTO INJECTION</div>
+      <h3 style="font-size: 17px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Open Any Upwork Job Page</h3>
+      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0;">
+        Navigate to any job detail page or proposal submission page on Upwork (<code style="font-family: var(--font-mono); background: #e2e8f0; padding: 1px 5px; border-radius: 4px;">upwork.com/jobs/*</code>). The extension automatically injects a sleek <b>⚡ FirstBid Proposal AI</b> floating button at the bottom-right of your screen.
+      </p>
+    </div>
+
+    <!-- Step 2 Card -->
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 14px; padding: 22px; position: relative;">
+      <div style="font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: var(--upwork-green); text-transform: uppercase; margin-bottom: 8px;">STEP 2 · 1-CLICK AI ANALYSIS</div>
+      <h3 style="font-size: 17px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Click "Generate Proposal"</h3>
+      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0;">
+        Click the floating AI button. FirstBidIn instantly analyzes the client's job title, description, budget, and screening questions, comparing them against your saved freelance profile and portfolio skills.
+      </p>
+    </div>
+
+    <!-- Step 3 Card -->
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 14px; padding: 22px; position: relative;">
+      <div style="font-size: 11px; font-family: var(--font-mono); font-weight: 800; color: var(--upwork-green); text-transform: uppercase; margin-bottom: 8px;">STEP 3 · 1-CLICK AUTO-FILL</div>
+      <h3 style="font-size: 17px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px;">Auto-Fill Into Upwork Textarea</h3>
+      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.55; margin: 0;">
+        Select your favorite opener hook, review the generated cover letter and screening Q&A answers, and click <b>🚀 Auto-Fill Cover Letter</b> to paste everything straight into Upwork's text fields without leaving your browser tab!
+      </p>
+    </div>
+
   </div>
 </div>
 
@@ -255,7 +301,7 @@
 
     <div style="display: flex; gap: 10px; justify-content: flex-end;">
       <button type="button" class="btn btn-ghost" onclick="closeInstallModal()" style="padding: 10px 18px; font-size: 13.5px;">Close</button>
-      <a href="{{ route('extension.download') }}" class="btn" style="background: #1a73e8; padding: 10px 22px; font-size: 14px; font-weight: 700; border-radius: 10px; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+      <a href="{{ route('extension.download') }}" class="btn" style="background: var(--upwork-green); padding: 10px 22px; font-size: 14px; font-weight: 700; border-radius: 10px; text-decoration: none; display: flex; align-items: center; gap: 8px;">
         📥 Download Package & Install
       </a>
     </div>
