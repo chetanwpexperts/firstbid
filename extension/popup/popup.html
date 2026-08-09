@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FirstBid.in Extension Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="header">
+      <div class="logo">
+        <div class="icon-badge">⚡</div>
+        <div class="brand">First<span>Bid</span>.in</div>
+      </div>
+      <div class="version">v1.0.0</div>
+    </div>
+
+    <div class="status-card" id="statusCard">
+      <div class="status-dot green"></div>
+      <div class="status-text" id="statusText">Ready for Upwork</div>
+    </div>
+
+    <form id="configForm">
+      <div class="form-group">
+        <label for="webhookToken">Your Webhook Token / API Key</label>
+        <input type="text" id="webhookToken" placeholder="Paste your token from Settings" required autocomplete="off">
+        <span class="help-text">Find your token under <a href="#" id="openSettings">FirstBid.in Settings ↗</a></span>
+      </div>
+
+      <div class="form-group">
+        <label for="apiBaseUrl">FirstBid.in Server URL</label>
+        <input type="text" id="apiBaseUrl" value="https://firstbidin.com" required>
+      </div>
+
+      <button type="submit" class="btn" id="saveBtn">Save Settings</button>
+    </form>
+
+    <div class="toast" id="toast">Settings saved successfully!</div>
+
+    <div class="footer">
+      <div>Account-Safe 100% Upwork ToS Compliant</div>
+      <a href="https://firstbidin.com/extension" target="_blank">Help & Documentation</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
