@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'FirstBidIn — Upwork AI Proposal Assistant | Chrome Web Store')
+@section('title', 'FirstBidIn — Upwork AI Proposal Assistant | Extension')
 
 @section('content')
 @php
@@ -31,23 +31,23 @@
         Draft tailored proposals, generate 3 opener hooks, and auto-fill cover letters and screening question answers directly inside Upwork job pages in 1 click.
       </p>
 
-      <!-- Store Stats & Rating -->
+      <!-- REAL Store Stats & Rating from Database -->
       <div style="display: flex; align-items: center; gap: 20px; font-size: 13.5px; color: var(--text-muted); flex-wrap: wrap; margin-bottom: 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 10px 0;">
-        <div style="display: flex; align-items: center; gap: 4px; color: #d97706; font-weight: 700;">
-          <span>⭐⭐⭐⭐⭐</span>
-          <span style="color: var(--text-dark); font-size: 14px; margin-left: 2px;">4.9</span>
-          <span style="color: var(--text-muted); font-weight: 500;">(128 ratings)</span>
+        <div style="display: flex; align-items: center; gap: 6px; font-weight: 700;">
+          @if(($reviewsCount ?? 0) > 0)
+            <span style="color: #d97706;">⭐ {{ $avgRating }} / 5.0</span>
+            <span style="color: var(--text-muted); font-weight: 500;">({{ $reviewsCount }} {{ Str::plural('user review', $reviewsCount) }})</span>
+          @else
+            <span style="color: var(--text-muted); font-weight: 600;">⭐ No ratings yet — be the first user to rate after trying!</span>
+          @endif
         </div>
 
-        <div>🏷️ <span style="font-weight: 600; color: var(--text-dark);">Productivity</span></div>
-        <div>👥 <span style="font-weight: 600; color: var(--text-dark);">10,000+ active users</span></div>
         <div>🛡️ <span style="font-weight: 600; color: var(--upwork-tint-text);">100% Upwork ToS Safe</span></div>
       </div>
 
-      <!-- Store Primary Action Buttons -->
+      <!-- Store Action Buttons -->
       <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
         @if($webstoreUrl)
-          <!-- Official Chrome Web Store Direct Install Button -->
           <a href="{{ $webstoreUrl }}" target="_blank" class="btn" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px; text-decoration: none;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
@@ -55,7 +55,6 @@
             Add to Chrome
           </a>
         @else
-          <!-- Unpacked / Pre-Publish Direct Installation Guide Trigger -->
           <button type="button" class="btn" id="addToChromeBtn" onclick="openInstallModal()" style="background: #1a73e8; padding: 12px 28px; font-size: 15px; font-weight: 700; border-radius: 24px; box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35); display: inline-flex; align-items: center; gap: 10px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 4C14.77 4 17.18 5.4 18.6 7.5H12V4ZM4.4 9C5.4 6.6 7.5 4.9 10.1 4.3L13.6 10.3L4.4 9ZM12 20C9.23 20 6.82 18.6 5.4 16.5H12V20ZM19.6 15C18.6 17.4 16.5 19.1 13.9 19.7L10.4 13.7L19.6 15Z" fill="#FFFFFF"/>
@@ -65,13 +64,93 @@
         @endif
 
         <a href="{{ route('extension.download') }}" class="btn btn-ghost" style="padding: 11px 20px; font-size: 14px; border-radius: 24px;">
-          📥 Download Web Store Package (.zip)
+          📥 Download Extension Package (.zip)
         </a>
       </div>
 
     </div>
   </div>
 </div>
+
+<!-- Interactive Extension Rating Form Section for Authenticated Users -->
+@auth
+<div class="glass-panel" style="padding: 24px 28px; background: #ffffff; margin-bottom: 32px; border-color: var(--upwork-tint-border);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+    <div>
+      <h2 style="font-size: 18px; font-weight: 800; color: var(--text-dark); margin: 0;">
+        ⭐ {{ $userReview ? 'Your Extension Rating & Review' : 'Rate & Review this Extension' }}
+      </h2>
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">
+        Share your experience after using the extension on Upwork.
+      </p>
+    </div>
+    @if($userReview)
+      <span class="badge badge-notified">You rated {{ $userReview->rating }}/5 stars</span>
+    @endif
+  </div>
+
+  <form method="POST" action="{{ route('extension.review') }}" style="display: flex; flex-direction: column; gap: 14px;">
+    @csrf
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <label style="font-weight: 700; font-size: 14px;">Rating:</label>
+      <div style="display: flex; gap: 8px;">
+        @for($i = 5; $i >= 1; $i--)
+          <label style="cursor: pointer; font-size: 20px; display: flex; align-items: center; gap: 4px;">
+            <input type="radio" name="rating" value="{{ $i }}" {{ ($userReview?->rating ?? 5) == $i ? 'checked' : '' }} required>
+            <span>{{ $i }} ★</span>
+          </label>
+        @endfor
+      </div>
+    </div>
+
+    <div>
+      <textarea name="review_text" rows="2" placeholder="Write your review or feedback (optional)..." style="width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13.5px; font-family: inherit;">{{ $userReview?->review_text }}</textarea>
+    </div>
+
+    <div style="text-align: right;">
+      <button type="submit" class="btn btn-sm" style="background: var(--upwork-green); padding: 8px 20px; font-size: 13.5px;">
+        Submit Rating & Review
+      </button>
+    </div>
+  </form>
+</div>
+@endauth
+
+<!-- Community User Reviews Section -->
+@if(($recentReviews ?? collect())->count() > 0)
+<div class="glass-panel" style="padding: 28px; background: #ffffff; margin-bottom: 32px;">
+  <h2 style="font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 16px;">
+    💬 User Ratings & Feedback ({{ $reviewsCount }})
+  </h2>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+    @foreach($recentReviews as $rev)
+      <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: 10px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="font-weight: 700; font-size: 14px; color: var(--text-dark);">
+            {{ $rev->user?->name ?? 'Freelancer' }}
+          </div>
+          <div style="color: #d97706; font-size: 13px; font-weight: 700;">
+            {{ str_repeat('★', $rev->rating) }}{{ str_repeat('☆', 5 - $rev->rating) }}
+          </div>
+        </div>
+        @if($rev->review_text)
+          <p style="font-size: 13px; color: var(--text-main); margin: 0; line-height: 1.5;">
+            "{{ $rev->review_text }}"
+          </p>
+        @else
+          <p style="font-size: 12px; color: var(--text-muted); font-style: italic; margin: 0;">
+            Rated {{ $rev->rating }} out of 5 stars
+          </p>
+        @endif
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; font-family: var(--font-mono);">
+          {{ $rev->created_at->diffForHumans() }}
+        </div>
+      </div>
+    @endforeach
+  </div>
+</div>
+@endif
 
 <!-- Extension Feature Preview Cards -->
 <div class="glass-panel" style="padding: 32px; background: #ffffff;">

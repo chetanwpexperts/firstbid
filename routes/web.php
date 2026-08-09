@@ -16,10 +16,19 @@ Route::get('/', fn () => auth()->check()
     : view('landing'));
 
 use App\Http\Controllers\ExtensionDownloadController;
+use App\Http\Controllers\ExtensionReviewController;
+use App\Models\ExtensionReview;
 
 Route::get('/robots.txt', [SeoController::class, 'robots']);
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap']);
-Route::get('/extension', fn () => view('extension'))->name('extension');
+Route::get('/extension', function () {
+    $avgRating = ExtensionReview::avg('rating') ? round(ExtensionReview::avg('rating'), 1) : 0;
+    $reviewsCount = ExtensionReview::count();
+    $userReview = auth()->check() ? ExtensionReview::where('user_id', auth()->id())->first() : null;
+    $recentReviews = ExtensionReview::with('user')->latest()->take(6)->get();
+
+    return view('extension', compact('avgRating', 'reviewsCount', 'userReview', 'recentReviews'));
+})->name('extension');
 Route::get('/extension/download', [ExtensionDownloadController::class, 'download'])->name('extension.download');
 
 // Guest routes
@@ -54,6 +63,7 @@ Route::middleware(['auth', EnsureUserIsApproved::class])->group(function () {
     Route::post('/settings/test-telegram', [SettingsController::class, 'testTelegram'])->name('settings.testTelegram');
     Route::get('/settings/verification', [SettingsController::class, 'verification'])->name('settings.verification');
 
+    Route::post('/extension/review', [ExtensionReviewController::class, 'store'])->name('extension.review');
     Route::post('/notifications/seen', [NotificationController::class, 'markSeen'])->name('notifications.seen');
 });
 
