@@ -84,4 +84,11 @@ Route::middleware(['auth', EnsureUserIsApproved::class, EnsureUserIsAdmin::class
     // Feedback admin portal
     Route::get('/admin/feedback', [AdminController::class, 'feedback'])->name('admin.feedback');
     Route::delete('/admin/feedback/{feedback}', [AdminController::class, 'deleteFeedback'])->name('admin.feedback.delete');
+
+    // Blog & Comment admin portal
+    Route::get('/admin/blogs', [AdminController::class, 'blogs'])->name('admin.blogs');
+    Route::post('/admin/blogs/generate', [AdminController::class, 'triggerBlogGenerator'])->name('admin.blogs.generate');
+    Route::delete('/admin/blogs/{blog}', [AdminController::class, 'deleteBlog'])->name('admin.blogs.delete');
+    Route::post('/admin/comments/{comment}/toggle', [AdminController::class, 'toggleCommentApproval'])->name('admin.comments.toggle');
+    Route::delete('/admin/comments/{comment}', [AdminController::class, 'deleteComment'])->name('admin.comments.delete');
 });

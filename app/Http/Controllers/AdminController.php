@@ -89,4 +89,50 @@ class AdminController extends Controller
 
         return back()->with('ok', 'Feedback record deleted.');
     }
+
+    public function blogs(Request $request)
+    {
+        $blogs = \App\Models\Blog::withCount(['comments' => function ($q) {
+            $q->where('is_approved', true);
+        }])->latest('published_at')->paginate(10);
+
+        $comments = \App\Models\BlogComment::with('blog', 'user')->latest()->paginate(15);
+
+        return view('admin.blogs', compact('blogs', 'comments'));
+    }
+
+    public function triggerBlogGenerator()
+    {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('blog:generate');
+            return back()->with('ok', 'AI Blog Generator triggered successfully! New article published.');
+        } catch (\Throwable $e) {
+            return back()->with('err', 'Failed to generate blog: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteBlog(\App\Models\Blog $blog)
+    {
+        $title = $blog->title;
+        $blog->delete();
+
+        return back()->with('ok', "Deleted blog article '{$title}'.");
+    }
+
+    public function toggleCommentApproval(\App\Models\BlogComment $comment)
+    {
+        $comment->is_approved = ! $comment->is_approved;
+        $comment->save();
+
+        $status = $comment->is_approved ? 'Comment approved.' : 'Comment unapproved.';
+
+        return back()->with('ok', $status);
+    }
+
+    public function deleteComment(\App\Models\BlogComment $comment)
+    {
+        $comment->delete();
+
+        return back()->with('ok', 'Comment deleted successfully.');
+    }
 }

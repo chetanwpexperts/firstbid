@@ -26,6 +26,7 @@
       @if(auth()->user()?->is_admin)
       <a class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}" href="{{ route('admin.users') }}">Users</a>
       <a class="nav-link {{ request()->routeIs('admin.feedback') ? 'active' : '' }}" href="{{ route('admin.feedback') }}">Feedback</a>
+      <a class="nav-link {{ request()->routeIs('admin.blogs') ? 'active' : '' }}" href="{{ route('admin.blogs') }}">Blogs Admin</a>
       @endif
     </nav>
 
