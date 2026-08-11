@@ -135,4 +135,39 @@ class AdminController extends Controller
 
         return back()->with('ok', 'Comment deleted successfully.');
     }
+
+    public function storeBlog(Request $request)
+    {
+        $data = $request->validate([
+            'title'            => 'required|string|max:255',
+            'category'         => 'required|string|max:100',
+            'meta_description' => 'required|string|max:300',
+            'content'          => 'required|string',
+        ]);
+
+        $slug = \Illuminate\Support\Str::slug($data['title']);
+        $count = \App\Models\Blog::where('slug', 'like', "{$slug}%")->count();
+        if ($count > 0) {
+            $slug .= '-' . ($count + 1);
+        }
+
+        $wordCount = str_word_count(strip_tags($data['content']));
+        $readingTime = max(1, (int) ceil($wordCount / 200));
+
+        \App\Models\Blog::create([
+            'slug'                 => $slug,
+            'title'                => $data['title'],
+            'meta_title'           => $data['title'] . ' | FirstBidIn',
+            'meta_description'     => $data['meta_description'],
+            'content'              => $data['content'],
+            'category'             => $data['category'],
+            'reading_time_minutes' => $readingTime,
+            'views_count'          => 0,
+            'likes_count'          => 0,
+            'is_published'         => true,
+            'published_at'         => now(),
+        ]);
+
+        return back()->with('ok', 'New blog article published successfully!');
+    }
 }

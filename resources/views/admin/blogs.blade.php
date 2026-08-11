@@ -11,14 +11,74 @@
       <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Monitor article analytics, moderate user comments, and trigger AI blog generation on demand.</p>
     </div>
 
-    <!-- Trigger AI Blog Generator Button -->
-    <form method="POST" action="{{ route('admin.blogs.generate') }}">
-      @csrf
-      <button class="btn" type="submit" style="background: var(--upwork-green); padding: 11px 22px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
-        ⚡ Generate New AI Blog Article
+    <!-- Header Actions -->
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+      <button type="button" class="btn btn-ghost" onclick="toggleCustomBlogForm()" style="border: 1px solid var(--border); padding: 10px 18px; font-size: 14px; font-weight: 700; background: #ffffff;">
+        ✍️ Write Custom Blog
       </button>
+
+      <!-- Trigger AI Blog Generator Button -->
+      <form method="POST" action="{{ route('admin.blogs.generate') }}" style="margin: 0;">
+        @csrf
+        <button class="btn" type="submit" style="background: var(--upwork-green); padding: 11px 22px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+          ⚡ Generate New AI Blog Article
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom Blog Article Creation Form Card (Hidden by default) -->
+  <div id="customBlogFormCard" class="glass-panel" style="display: none; padding: 28px; background: #ffffff; margin-bottom: 32px; border-color: var(--upwork-green);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+      <h3 style="font-size: 18px; font-weight: 800; color: var(--text-dark); margin: 0;">✍️ Publish New Custom Blog Article</h3>
+      <button type="button" onclick="toggleCustomBlogForm()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);">✕</button>
+    </div>
+
+    <form method="POST" action="{{ route('admin.blogs.store') }}">
+      @csrf
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 16px;">
+        <div>
+          <label class="form-label" style="font-size: 13px; font-weight: 700;">Article Title *</label>
+          <input type="text" name="title" required placeholder="e.g., 5 Upwork Proposal Hacks to Double Response Rates" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size: 13px; font-weight: 700;">Category *</label>
+          <select name="category" required style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; background: #ffffff;">
+            <option value="Proposal Strategy">Proposal Strategy</option>
+            <option value="Upwork Tips">Upwork Tips</option>
+            <option value="Client Communication">Client Communication</option>
+            <option value="AI Freelancing">AI Freelancing</option>
+            <option value="Pricing & Rates">Pricing & Rates</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 700;">SEO Meta Description * (max 300 chars)</label>
+        <input type="text" name="meta_description" required placeholder="Short summary for Google search results..." style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 700;">Article Content * (Supports HTML & Formatting)</label>
+        <textarea name="content" rows="12" required placeholder="Write your full blog post here. You can use HTML tags like <h2>, <p>, <ul>, <li>, <strong>, <blockquote>..." style="width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; line-height: 1.6; resize: vertical;"></textarea>
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button type="button" class="btn btn-ghost" onclick="toggleCustomBlogForm()">Cancel</button>
+        <button type="submit" class="btn" style="background: var(--upwork-green); padding: 10px 24px; font-weight: 700;">
+          🚀 Publish Article Now
+        </button>
+      </div>
     </form>
   </div>
+
+  <script>
+  function toggleCustomBlogForm() {
+    const card = document.getElementById('customBlogFormCard');
+    card.style.display = card.style.display === 'none' ? 'block' : 'none';
+  }
+  </script>
 
   <!-- Analytics Summary Grid -->
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-bottom: 32px;">

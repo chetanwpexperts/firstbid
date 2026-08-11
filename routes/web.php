@@ -91,6 +91,7 @@ Route::middleware(['auth', EnsureUserIsApproved::class, EnsureUserIsAdmin::class
 
     // Blog & Comment admin portal
     Route::get('/admin/blogs', [AdminController::class, 'blogs'])->name('admin.blogs');
+    Route::post('/admin/blogs', [AdminController::class, 'storeBlog'])->name('admin.blogs.store');
     Route::post('/admin/blogs/generate', [AdminController::class, 'triggerBlogGenerator'])->name('admin.blogs.generate');
     Route::delete('/admin/blogs/{blog}', [AdminController::class, 'deleteBlog'])->name('admin.blogs.delete');
     Route::post('/admin/comments/{comment}/toggle', [AdminController::class, 'toggleCommentApproval'])->name('admin.comments.toggle');
