@@ -53,7 +53,7 @@ class TelegramWebhookController extends Controller
     private function reply(string|int $chatId, string $text): void
     {
         try {
-            Http::timeout(10)->post(
+            Http::connectTimeout(2)->timeout(5)->post(
                 'https://api.telegram.org/bot' . config('services.telegram.bot_token') . '/sendMessage',
                 ['chat_id' => $chatId, 'text' => $text]
             );

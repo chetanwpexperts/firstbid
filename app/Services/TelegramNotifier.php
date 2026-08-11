@@ -101,7 +101,8 @@ class TelegramNotifier
             $payload['reply_markup'] = json_encode($replyMarkup);
         }
 
-        Http::timeout(15)
+        Http::connectTimeout(2)
+            ->timeout(5)
             ->post('https://api.telegram.org/bot' . config('services.telegram.bot_token') . '/sendMessage', $payload)
             ->throw();
     }
