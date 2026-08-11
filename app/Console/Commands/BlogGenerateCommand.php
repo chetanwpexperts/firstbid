@@ -16,34 +16,79 @@ class BlogGenerateCommand extends Command
     {
         $this->info('Starting AI Blog post generation...');
 
-        $topics = [
-            'How to Write Winning Upwork Proposals in 2026 That Get Hired Fast',
-            '3 Opening Hook Formulas for Upwork Proposals That Double Client Reply Rates',
-            'Fixed Price vs Hourly Upwork Bidding Strategy: How to Calculate Subtask Effort',
-            'How to Answer Upwork Screening Questions to Win Enterprise Clients',
-            'Avoid Upwork Account Suspensions: Best Practices for AI Proposal Writing',
-            'How Top Freelancers Use AI to Draft Cover Letters in 60 Seconds',
-        ];
+        // Deduplicate pre-existing duplicate articles in DB
+        $allBlogs = Blog::orderBy('id', 'asc')->get();
+        $seenTitles = [];
+        foreach ($allBlogs as $b) {
+            $norm = strtolower(trim($b->title));
+            if (in_array($norm, $seenTitles)) {
+                $b->delete();
+            } else {
+                $seenTitles[] = $norm;
+            }
+        }
 
-        $topic = $this->option('topic') ?: $topics[array_rand($topics)];
+        $existingTitles = Blog::pluck('title')->toArray();
+        $existingTitlesList = ! empty($existingTitles)
+            ? implode("\n- ", $existingTitles)
+            : 'None yet.';
 
-        $prompt = <<<PROMPT
-You are a senior freelance growth strategist and SEO content writer. Write a detailed, highly engaging 1,000+ word blog article for Upwork freelancers titled: "{$topic}".
+        $this->info('Fetched ' . count($existingTitles) . ' existing blog titles from database to avoid duplicates.');
 
-Use Markdown headers (##, ###), bold text, bullet points, and clean paragraphs. Sound professional, specific, and practical. Do NOT use cheesy buzzwords ("seamless", "game-changer").
+        $specificTopic = $this->option('topic');
+
+        if ($specificTopic) {
+            $prompt = <<<PROMPT
+You are a senior freelance growth strategist and SEO content writer. Write a detailed, highly engaging 1,200+ word blog article for Upwork freelancers on the topic: "{$specificTopic}".
+
+Use Markdown headers (##, ###), bold text, bullet points, and clean paragraphs. Sound professional, specific, actionable, and practical. Do NOT use cheesy buzzwords ("seamless", "game-changer").
 
 Structure your response using these exact demarcations:
 [TITLE] Write Title Here [/TITLE]
+[CATEGORY] Pick one: Upwork Strategy / Proposal Hooks / Screening Q&A / Estimating & Pricing / Upwork Compliance / Client Management [/CATEGORY]
 [META_TITLE] Write Meta Title Here [/META_TITLE]
 [META_DESCRIPTION] Write Meta Description Here [/META_DESCRIPTION]
 [CONTENT]
 Write full markdown article body here...
 [/CONTENT]
 PROMPT;
+        } else {
+            $prompt = <<<PROMPT
+You are a senior freelance growth strategist and SEO content writer for FirstBidIn (an AI proposal assistant for Upwork freelancers).
+
+Your task is to invent a COMPLETELY UNIQUE, fresh, high-demand blog article topic for Upwork freelancers.
+
+CRITICAL REQUIREMENT: Here is the list of titles ALREADY published on our blog:
+- {$existingTitlesList}
+
+DO NOT write about any of the titles listed above or create minor variations of them. Invent a brand new, specific, highly valuable topic that has NOT been covered yet.
+
+Ideas for unique angles:
+- How to spot and avoid client red flags & scams on Upwork
+- How to increase your hourly rate on Upwork from \$25/hr to \$90/hr
+- How to win enterprise & long-term retainer clients on Upwork
+- Optimizing your Upwork Profile Title, Overview & Portfolio for 2026 algorithm search
+- Handling client scope creep, refund demands, and dispute resolution safely
+- How to get your first 5-star review on Upwork in 7 days without underpricing
+- Top 7 Connect bidding mistakes that waste money on Upwork
+- How to transition from a solo freelancer to an Upwork Agency
+
+Write a detailed, highly engaging 1,200+ word blog article. Use Markdown headers (##, ###), bold text, bullet points, and clean paragraphs. Sound professional, specific, actionable, and practical. Do NOT use cheesy buzzwords ("seamless", "game-changer").
+
+Structure your response using these exact demarcations:
+[TITLE] Write Title Here [/TITLE]
+[CATEGORY] Pick one: Upwork Strategy / Proposal Hooks / Screening Q&A / Estimating & Pricing / Upwork Compliance / Client Management / Agency & Growth [/CATEGORY]
+[META_TITLE] Write Meta Title Here [/META_TITLE]
+[META_DESCRIPTION] Write Meta Description Here [/META_DESCRIPTION]
+[CONTENT]
+Write full markdown article body here...
+[/CONTENT]
+PROMPT;
+        }
 
         try {
             $res = Http::connectTimeout(10)
-                ->timeout(60)
+                ->timeout(75)
                 ->withHeaders([
                     'x-api-key'         => config('services.anthropic.key'),
                     'anthropic-version' => '2023-06-01',
@@ -51,7 +96,7 @@ PROMPT;
                 ])
                 ->post('https://api.anthropic.com/v1/messages', [
                     'model'      => config('services.anthropic.model', 'claude-sonnet-4-6'),
-                    'max_tokens' => 2500,
+                    'max_tokens' => 3000,
                     'messages'   => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
@@ -61,18 +106,26 @@ PROMPT;
             $text = collect($res['content'] ?? [])->where('type', 'text')->pluck('text')->implode("\n");
 
             preg_match('/\[TITLE\](.*?)\[\/TITLE\]/s', $text, $tM);
+            preg_match('/\[CATEGORY\](.*?)\[\/CATEGORY\]/s', $text, $catM);
             preg_match('/\[META_TITLE\](.*?)\[\/META_TITLE\]/s', $text, $mtM);
             preg_match('/\[META_DESCRIPTION\](.*?)\[\/META_DESCRIPTION\]/s', $text, $mdM);
             preg_match('/\[CONTENT\](.*?)\[\/CONTENT\]/s', $text, $cM);
 
-            $title = isset($tM[1]) ? trim($tM[1]) : $topic;
+            $title = isset($tM[1]) ? trim($tM[1]) : 'Upwork Freelance Strategy Guide';
+            $category = isset($catM[1]) ? trim($catM[1]) : 'Upwork Strategy';
             $metaTitle = isset($mtM[1]) ? trim($mtM[1]) : $title;
             $metaDescription = isset($mdM[1]) ? trim($mdM[1]) : Str::limit(strip_tags($text), 150);
             $rawContent = isset($cM[1]) ? trim($cM[1]) : $text;
 
             if (empty($rawContent)) {
-                $this->error('Empty blog content returned.');
+                $this->error('Empty blog content returned from API.');
                 return 1;
+            }
+
+            // Check if title or very similar title already exists
+            if (Blog::where('title', $title)->exists()) {
+                $this->warn("Generated title '{$title}' already exists. Skipping duplicate save.");
+                return 0;
             }
 
             // Convert basic Markdown headers & paragraphs to clean HTML
@@ -93,8 +146,8 @@ PROMPT;
                 'meta_title'           => $metaTitle,
                 'meta_description'     => $metaDescription,
                 'content'              => $contentHtml,
-                'category'             => 'Upwork Strategy',
-                'reading_time_minutes' => 5,
+                'category'             => $category,
+                'reading_time_minutes' => max(1, (int) ceil(str_word_count(strip_tags($rawContent)) / 200)),
                 'is_published'         => true,
                 'published_at'         => now(),
             ]);
