@@ -97,8 +97,8 @@ PROMPT;
                 'content-type'      => 'application/json',
             ])
             ->post('https://api.anthropic.com/v1/messages', [
-                'model'      => config('services.anthropic.model', 'claude-sonnet-4-6'),
-                'max_tokens' => 1600,
+                'model'      => config('services.anthropic.model', 'claude-3-5-haiku-20241022'),
+                'max_tokens' => 1200,
                 'messages'   => [
                     ['role' => 'user', 'content' => $prompt],
                 ],
