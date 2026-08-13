@@ -89,8 +89,8 @@ Respond ONLY with valid JSON, no markdown fences:
 }
 PROMPT;
 
-        $response = Http::connectTimeout(2)
-            ->timeout(20)
+        $response = Http::connectTimeout(10)
+            ->timeout(60)
             ->withHeaders([
                 'x-api-key'         => config('services.anthropic.key'),
                 'anthropic-version' => '2023-06-01',
