@@ -45,7 +45,11 @@ class DashboardController extends Controller
             ->where('payment_verified', true)
             ->where('status', '!=', 'skipped');
 
+        // The visible list additionally excludes already-applied jobs — those live
+        // on the dedicated Applied tab only. Stats below still count the full window.
         $jobs = $windowed()
+            ->where('status', '!=', 'applied')
+            ->whereNull('applied_at')
             ->latest()
             ->when($request->query('status'), fn ($q, $s) => $q->where('status', $s))
             ->paginate(15);
