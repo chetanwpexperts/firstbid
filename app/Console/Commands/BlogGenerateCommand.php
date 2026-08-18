@@ -96,7 +96,7 @@ PROMPT;
                 ])
                 ->post('https://api.anthropic.com/v1/messages', [
                     'model'      => config('services.anthropic.model', 'claude-sonnet-4-6'),
-                    'max_tokens' => 3000,
+                    'max_tokens' => 4096,
                     'messages'   => [
                         ['role' => 'user', 'content' => $prompt],
                     ],
@@ -111,14 +111,28 @@ PROMPT;
             preg_match('/\[META_DESCRIPTION\](.*?)\[\/META_DESCRIPTION\]/s', $text, $mdM);
             preg_match('/\[CONTENT\](.*?)\[\/CONTENT\]/s', $text, $cM);
 
+            // Closing [/CONTENT] tag can be missing if the model runs out of tokens or
+            // drifts from the format — fall back to "everything after [CONTENT]" rather
+            // than the entire raw response (which still contains the other tag blocks).
+            if (! isset($cM[1]) && preg_match('/\[CONTENT\](.*)$/s', $text, $cMOpen)) {
+                $cM = $cMOpen;
+            }
+
             $title = isset($tM[1]) ? trim($tM[1]) : 'Upwork Freelance Strategy Guide';
             $category = isset($catM[1]) ? trim($catM[1]) : 'Upwork Strategy';
             $metaTitle = isset($mtM[1]) ? trim($mtM[1]) : $title;
             $metaDescription = isset($mdM[1]) ? trim($mdM[1]) : Str::limit(strip_tags($text), 150);
-            $rawContent = isset($cM[1]) ? trim($cM[1]) : $text;
+            $rawContent = isset($cM[1]) ? trim($cM[1]) : null;
 
             if (empty($rawContent)) {
-                $this->error('Empty blog content returned from API.');
+                $this->error('Could not parse [CONTENT] block from API response — skipping publish to avoid a garbled post.');
+                return 1;
+            }
+
+            // Defense in depth: if any of the other section tags leaked into the
+            // extracted content, parsing genuinely failed — don't publish it.
+            if (preg_match('/\[(TITLE|CATEGORY|META_TITLE|META_DESCRIPTION|CONTENT)\]/', $rawContent)) {
+                $this->error('Extracted content still contains template tags — skipping publish to avoid a garbled post.');
                 return 1;
             }
 
