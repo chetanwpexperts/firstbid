@@ -54,7 +54,38 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           return;
         }
 
-        sendResponse({ success: true, proposal: data });
+        // Already generated previously (cached) — return immediately.
+        if (data.status === 'ready') {
+          sendResponse({ success: true, proposal: data });
+          return;
+        }
+
+        // Otherwise the server queued the generation — poll until it's done.
+        const jobId = data.job_id;
+        const statusUrl = `${baseUrl}/api/extension/generate/${jobId}/status`;
+        const pollIntervalMs = 1500;
+        const maxAttempts = 40; // ~60s ceiling, matches previous single-request timeout
+
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+          await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+
+          const pollRes = await fetch(statusUrl, {
+            headers: { 'X-Webhook-Token': webhookToken, 'Accept': 'application/json' }
+          });
+          const pollData = await pollRes.json();
+
+          if (pollData.status === 'ready') {
+            sendResponse({ success: true, proposal: pollData });
+            return;
+          }
+          if (pollData.status === 'failed') {
+            sendResponse({ success: false, error: pollData.error || 'Failed to generate proposal.' });
+            return;
+          }
+          // status === 'processing' — keep polling
+        }
+
+        sendResponse({ success: false, error: 'Generation is taking longer than expected. Please try again in a moment.' });
       } catch (err) {
         console.error('[FirstBid.in] API Error:', err);
         sendResponse({ success: false, error: 'Network error connecting to FirstBid.in API.' });

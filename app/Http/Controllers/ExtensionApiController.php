@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateExtensionProposalJob;
 use App\Models\UpworkJob;
 use App\Models\User;
-use App\Services\ProposalAI;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ExtensionApiController extends Controller
 {
@@ -38,7 +37,7 @@ class ExtensionApiController extends Controller
      * Header: X-Webhook-Token
      * Body: { title, description, jobUrl, ciphertext, budget, jobType, screeningQuestions }
      */
-    public function generate(Request $request, ProposalAI $ai)
+    public function generate(Request $request)
     {
         $token = $request->header('X-Webhook-Token') ?? $request->input('token');
         $user = User::where('webhook_token', $token)->first();
@@ -93,6 +92,7 @@ class ExtensionApiController extends Controller
         if ($job->cover_letter) {
             return response()->json([
                 'success'            => true,
+                'status'             => 'ready',
                 'job_id'             => $job->id,
                 'cover_letter'       => $job->cover_letter,
                 'opener_hooks'       => $job->opener_hooks,
@@ -104,39 +104,61 @@ class ExtensionApiController extends Controller
             ]);
         }
 
-        try {
-            $result = $ai->generate($job, $user->proposal_profile ?? '', $user->portfolio_projects ?? []);
+        // Dispatch generation to the queue instead of blocking this request on the
+        // AI call — avoids holding a PHP-FPM worker open for up to 60s per click.
+        if ($job->status !== 'processing') {
+            $job->update(['status' => 'processing']);
+            GenerateExtensionProposalJob::dispatch($job->id, $user->id);
+        }
 
-            $job->update([
-                'cover_letter'       => $result['cover_letter'],
-                'opener_hooks'       => $result['opener_hooks'] ?? null,
-                'milestones'         => $result['milestones'] ?? null,
-                'matched_portfolio'  => $result['matched_portfolio'] ?? null,
-                'question_answers'   => $result['question_answers'],
-                'bid_suggestion'     => $result['bid_suggestion'],
-                'estimated_budget'   => $result['estimated_budget'] ?? null,
-                'estimated_duration' => $result['estimated_duration'] ?? null,
-                'budget_reasoning'  => $result['budget_reasoning'] ?? null,
-                'task_breakdown'     => $result['task_breakdown'] ?? null,
-                'status'             => 'generated',
-            ]);
+        return response()->json([
+            'success' => true,
+            'status'  => 'processing',
+            'job_id'  => $job->id,
+        ]);
+    }
 
-            $user->increment('letters_used');
+    /**
+     * Poll for the result of a queued generation.
+     * GET /api/extension/generate/{id}/status
+     */
+    public function generateStatus(Request $request, int $id)
+    {
+        $token = $request->header('X-Webhook-Token') ?? $request->input('token');
+        $user = User::where('webhook_token', $token)->first();
 
+        if (! $user) {
+            return response()->json(['error' => 'Unauthorized: Invalid FirstBid.in Webhook Token.'], 401);
+        }
+
+        $job = UpworkJob::where('user_id', $user->id)->find($id);
+        if (! $job) {
+            return response()->json(['error' => 'Job not found.'], 404);
+        }
+
+        if ($job->cover_letter) {
             return response()->json([
                 'success'            => true,
+                'status'             => 'ready',
                 'job_id'             => $job->id,
-                'cover_letter'       => $result['cover_letter'],
-                'opener_hooks'       => $result['opener_hooks'] ?? null,
-                'milestones'         => $result['milestones'] ?? null,
-                'question_answers'   => $result['question_answers'] ?? [],
-                'estimated_budget'   => $result['estimated_budget'] ?? null,
-                'estimated_duration' => $result['estimated_duration'] ?? null,
-                'task_breakdown'     => $result['task_breakdown'] ?? [],
+                'cover_letter'       => $job->cover_letter,
+                'opener_hooks'       => $job->opener_hooks,
+                'milestones'         => $job->milestones,
+                'question_answers'   => $job->question_answers,
+                'estimated_budget'   => $job->estimated_budget,
+                'estimated_duration' => $job->estimated_duration,
+                'task_breakdown'     => $job->task_breakdown,
             ]);
-        } catch (\Throwable $e) {
-            Log::error("Extension proposal generation error: " . $e->getMessage());
-            return response()->json(['error' => 'AI Generation Error: ' . $e->getMessage()], 500);
         }
+
+        if ($job->status === 'failed') {
+            return response()->json([
+                'success' => false,
+                'status'  => 'failed',
+                'error'   => $job->skip_reason ?? 'AI generation failed.',
+            ]);
+        }
+
+        return response()->json(['success' => true, 'status' => 'processing']);
     }
 }
