@@ -118,16 +118,36 @@
   }
 
   // 2. Scrape Job Details from Upwork DOM
+  // Generic Upwork UI chrome that sometimes matches our title selectors on the
+  // proposal-submission page (e.g. a page heading that says "Submit a Proposal"
+  // instead of the actual job title) — reject these rather than using them.
+  const GENERIC_TITLE_PATTERN = /^(submit\s*(a\s*)?proposal|apply\s*now|cover\s*letter|proposal\s*details|screening\s*questions)$/i;
+
   function scrapeUpworkJob() {
-    const titleEl = document.querySelector('h1, h2.job-title, .job-title, [data-test="job-title"]');
-    const title = titleEl ? titleEl.innerText.trim() : document.title.replace('- Upwork', '').trim();
+    const titleSelectors = ['[data-test="job-title"]', '.job-title', 'h2.job-title', 'h1'];
+    let title = '';
+    for (const sel of titleSelectors) {
+      const el = document.querySelector(sel);
+      const text = el ? el.innerText.trim() : '';
+      if (text && !GENERIC_TITLE_PATTERN.test(text)) {
+        title = text;
+        break;
+      }
+    }
+    if (!title) {
+      const docTitle = document.title.replace('- Upwork', '').trim();
+      title = (docTitle && !GENERIC_TITLE_PATTERN.test(docTitle)) ? docTitle : 'Untitled Upwork Job';
+    }
 
     const descEl = document.querySelector('.job-description, [data-test="job-description"], .description, section.job-description-section');
     const description = descEl ? descEl.innerText.trim() : (document.body.innerText.slice(0, 1500));
 
     let budget = 'See job post';
     const budgetEl = document.querySelector('[data-test="budget"], .budget, [data-test="hourly-rate"]');
-    if (budgetEl) budget = budgetEl.innerText.trim();
+    if (budgetEl) {
+      const budgetText = budgetEl.innerText.trim();
+      if (budgetText) budget = budgetText;
+    }
 
     // Extract screening questions if present on application page
     const screeningQuestions = [];
