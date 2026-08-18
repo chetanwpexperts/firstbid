@@ -7,12 +7,18 @@
         $lastPage = method_exists($paginator, 'lastPage') ? max(1, $paginator->lastPage()) : 1;
         $progressPct = round(($currentPage / $lastPage) * 100);
         $isAppliedRoute = request()->routeIs('jobs.applied*') || !empty($isAppliedView);
+        $isDashboardRoute = request()->routeIs('dashboard*');
 
-        $prettyUrl = function($page) use ($isAppliedRoute) {
+        $prettyUrl = function($page) use ($isAppliedRoute, $isDashboardRoute, $paginator) {
             if ($isAppliedRoute) {
                 return $page <= 1 ? route('jobs.applied') : route('jobs.applied.page', ['page' => $page]);
             }
-            return $page <= 1 ? route('dashboard') : route('dashboard.page', ['page' => $page]);
+            if ($isDashboardRoute) {
+                return $page <= 1 ? route('dashboard') : route('dashboard.page', ['page' => $page]);
+            }
+            // Any other paginated listing (e.g. the blog) — use the paginator's own
+            // URL builder so it preserves the current route and query string.
+            return $paginator->url($page);
         };
       @endphp
       <div class="pager-progress-track">
@@ -71,7 +77,7 @@
         <span>Page <strong>{{ $currentPage }}</strong> of <strong>{{ $lastPage }}</strong></span>
         @if(method_exists($paginator, 'total') && $paginator->total() > 0)
           <span class="pager-meta-dot">•</span>
-          <span>Showing <strong>{{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}</strong> of <strong>{{ $paginator->total() }}</strong> jobs</span>
+          <span>Showing <strong>{{ $paginator->firstItem() }}–{{ $paginator->lastItem() }}</strong> of <strong>{{ $paginator->total() }}</strong> {{ $itemLabel ?? 'jobs' }}</span>
         @endif
       </div>
     </div>

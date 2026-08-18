@@ -66,7 +66,7 @@
     </div>
 
     <div style="margin-top: 32px;">
-      {{ $blogs->links() }}
+      {{ $blogs->appends(request()->query())->links('partials.pagination', ['itemLabel' => 'articles']) }}
     </div>
   @else
     <div class="glass-panel" style="padding: 40px; text-align: center; background: #ffffff;">
